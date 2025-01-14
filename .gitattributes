@@ -1,0 +1,9 @@
+# Ensure Python files use LF line endings
+*.py text eol=lf
+
+# Set default line endings for text files
+* text=auto
+
+# Binary files (prevent line ending conversion)
+*.jpg binary
+*.png binary
