@@ -245,7 +245,19 @@ def experiment_A():
     
     # Insert your code for experiment A design here 
     random_list = create_random_list(10000,100000)
+    N = 80
+    run_times = []
+    for _ in range (N):
+        L = random_list
 
+        start_time = time.time_ns()
+        bubble_sort = BubbleSort(L)
+        end_time = time.time_ns()
+
+        run_time = (end_time - start_time) / 1000
+        run_times.append(run_time)
+
+    print (run_times)
     return 0
 
 def experiment_B():
