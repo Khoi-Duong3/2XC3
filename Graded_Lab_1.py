@@ -50,7 +50,9 @@ def create_near_sorted_list(length, max_value, item=None, item_index=None):
     for i in range ((max_value - length), max_value):
         near_sorted_list.append(i)
     
-    near_sorted_list[0], near_sorted_list[-1] = near_sorted_list[-1], near_sorted_list[0]
+    for j in range (len(near_sorted_list)/8):
+        random_item = random.randint(len(near_sorted_list))
+        near_sorted_list[i], near_sorted_list[random_item] = near_sorted_list[random_item], near_sorted_list[i]
 
     return near_sorted_list
 
@@ -242,6 +244,7 @@ print("After sorting by Quick Sort: ",quick_sort.get_sorted())
 def experiment_A():
     
     # Insert your code for experiment A design here 
+    random_list = create_random_list(10000,100000)
 
     return 0
 
