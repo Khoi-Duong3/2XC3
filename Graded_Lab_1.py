@@ -1,5 +1,3 @@
-
-
 import random
 import time
 import timeit 
@@ -16,10 +14,13 @@ from typing import List
 def draw_plot(run_arr, mean):
     x = np.arange(0, len(run_arr),1)
     fig=plt.figure(figsize=(20,8))
+    plt.bar(x, run_arr, color="blue", alpha=0.7, label="Run times")
     plt.axhline(mean,color="red",linestyle="--",label="Avg")
+    plt.ticklabel_format(style='plain', axis='y')
     plt.xlabel("Iterations")
     plt.ylabel("Run time in ms order of 1e-6")
     plt.title("Run time for retrieval")
+    plt.tight_layout()
     plt.show()
 
 # function to generate random list 
@@ -37,9 +38,11 @@ def create_reverse_list(length, max_value, item=None, item_index=None):
     reversed_list = []
 
     #include your code here
-    for i in range (max_value,(max_value - length), -1):
-        reversed_list.append(i)
+    for i in range (length):
+        random_num = random.randint(1, max_value)
+        reversed_list.append(random_num)
 
+    reversed_list.reverse()
     return reversed_list
 
 # function to generate near sorted list of a given size and with a given maximum value
@@ -51,16 +54,26 @@ def create_near_sorted_list(length, max_value, item=None, item_index=None):
         near_sorted_list.append(i)
     
     for j in range (len(near_sorted_list)/8):
-        random_item = random.randint(len(near_sorted_list))
-        near_sorted_list[i], near_sorted_list[random_item] = near_sorted_list[random_item], near_sorted_list[i]
+        random_item = random.randint(0, len(near_sorted_list)-1)
+        near_sorted_list[j], near_sorted_list[random_item] = near_sorted_list[random_item], near_sorted_list[j]
 
     return near_sorted_list
 
 # function to generate near sorted list of a given size and with a given maximum value
 def reduced_unique_list(length, max_value, item=None, item_index=None):
-    reduced_list = []
 
     #include your code here
+
+    reduced_list = []
+    random_list = []
+    exist = set()
+    for _ in range (length):
+        random_list.append(random.randint(0, max_value))
+    
+    for num in random_list:
+        if num not in exist:
+            reduced_list.append(num)
+            exist.add(num)
 
     return reduced_list
 
@@ -244,31 +257,236 @@ print("After sorting by Quick Sort: ",quick_sort.get_sorted())
 def experiment_A():
     
     # Insert your code for experiment A design here 
+
     random_list = create_random_list(10000,100000)
     N = 80
-    run_times = []
+    bubble_run_times = []
+    insertion_run_times = []
+    selection_run_times = []
+    quick_run_times = []
+    merge_run_times = []
     for _ in range (N):
-        L = random_list
+        start_time = timeit.default_timer()
 
-        start_time = time.time_ns()
-        bubble_sort = BubbleSort(L)
-        end_time = time.time_ns()
+        _ = BubbleSort(random_list[:])
 
-        run_time = (end_time - start_time) / 1000
-        run_times.append(run_time)
+        end_time = timeit.default_timer()
 
-    print (run_times)
+        run_time = (end_time - start_time) * 1e6
+        bubble_run_times.append(run_time)
+    
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = InsertionSort(random_list[:])
+
+        end_time = timeit.default_timer()
+
+        run_time = (end_time - start_time) * 1e6
+        insertion_run_times.append(run_time)
+    
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = SelectionSort(random_list[:])
+
+        end_time = timeit.default_timer()
+
+        run_time = (end_time - start_time) * 1e6
+        selection_run_times.append(run_time)
+    
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = QuickSort(random_list[:])
+
+        end_time = timeit.default_timer()
+
+        run_time = (end_time - start_time) * 1e6
+        quick_run_times.append(run_time)
+    
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = MergeSort(random_list[:])
+
+        end_time = timeit.default_timer()
+
+        run_time = (end_time - start_time) * 1e6
+        merge_run_times.append(run_time)
+
+    print(bubble_run_times)
+    print(insertion_run_times)
+    print(selection_run_times)
+    print(quick_run_times)
+    print(merge_run_times)
+
+    bubble_mean = np.mean(bubble_run_times)
+    insertion_mean = np.mean(insertion_run_times)
+    selection_mean = np.mean(selection_run_times)
+    quick_mean = np.mean(quick_run_times)
+    merge_mean = np.mean(merge_run_times)
+
+    draw_plot(bubble_run_times, bubble_mean)
+    draw_plot(insertion_run_times, insertion_mean)
+    draw_plot(selection_run_times, selection_mean)
+    draw_plot(quick_run_times, quick_mean)
+    draw_plot(merge_run_times, merge_mean)
+
     return 0
 
 def experiment_B():
     
     # Insert your code for experiment B design here 
 
+    near_sorted_list = create_near_sorted_list(5000,100000)
+    N = 100
+
+    bubble_run_times = []
+    insertion_run_times = []
+    selection_run_times = []
+    quick_run_times = []
+    merge_run_times = []
+
+    for _ in range (N):
+        start_time = timeit.defaul_timer()
+
+        _ = BubbleSort(near_sorted_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        bubble_run_times.append(run_time)
+
+    for _ in range (N):
+        start_time = timeit.defaul_timer()
+
+        _ = InsertionSort(near_sorted_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        insertion_run_times.append(run_time)
+    
+    for _ in range (N):
+        start_time = timeit.defaul_timer()
+
+        _ = SelectionSort(near_sorted_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        selection_run_times.append(run_time)
+    
+    for _ in range (N):
+        start_time = timeit.defaul_timer()
+
+        _ = QuickSort(near_sorted_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        quick_run_times.append(run_time)
+    
+    for _ in range (N):
+        start_time = timeit.defaul_timer()
+
+        _ = MergeSort(near_sorted_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        merge_run_times.append(run_time)
+
+    print(bubble_run_times)
+    print(insertion_run_times)
+    print(selection_run_times)
+    print(quick_run_times)
+    print(merge_run_times)
+
+    bubble_mean = np.mean(bubble_run_times)
+    insertion_mean = np.mean(insertion_run_times)
+    selection_mean = np.mean(selection_run_times)
+    quick_mean = np.mean(quick_run_times)
+    merge_mean = np.mean(merge_run_times)
+
+    draw_plot(bubble_run_times, bubble_mean)
+    draw_plot(insertion_run_times, insertion_mean)
+    draw_plot(selection_run_times, selection_mean)
+    draw_plot(quick_run_times, quick_mean)
+    draw_plot(merge_run_times, merge_mean)
+
     return 0
 
 def experiment_C():
     
     # Insert your code for experiment C design here 
+    reversed_list = create_reverse_list(10000, 100000)
+    N = 100
+
+    bubble_run_times = []
+    insertion_run_times = []
+    selection_run_times = []
+    quick_run_times = []
+    merge_run_times = []
+
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = BubbleSort(reversed_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        bubble_run_times.append(run_time)
+    
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = InsertionSort(reversed_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        insertion_run_times.append(run_time)
+
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = SelectionSort(reversed_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        selection_run_times.append(run_time)
+
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = QuickSort(reversed_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        quick_run_times.append(run_time)
+
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = MergeSort(reversed_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        merge_run_times.append(run_time)
+
+    print(bubble_run_times)
+    print(insertion_run_times)
+    print(selection_run_times)
+    print(quick_run_times)
+    print(merge_run_times)
+
+    bubble_mean = np.mean(bubble_run_times)
+    insertion_mean = np.mean(insertion_run_times)
+    selection_mean = np.mean(selection_run_times)
+    quick_mean = np.mean(quick_run_times)
+    merge_mean = np.mean(merge_run_times)
+
+    draw_plot(bubble_run_times, bubble_mean)
+    draw_plot(insertion_run_times, insertion_mean)
+    draw_plot(selection_run_times, selection_mean)
+    draw_plot(quick_run_times, quick_mean)
+    draw_plot(merge_run_times, merge_mean)
 
     return 0
 
@@ -281,13 +499,93 @@ def experiment_D():
 def experiment_E():
     
     # Insert your code for experiment E design here 
+    reduced_list = reduced_unique_list(5000, 100000)
+    N = 100
+    
+    bubble_run_times = []
+    insertion_run_times = []
+    selection_run_times = []
+    quick_run_times = []
+    merge_run_times = []
+
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = BubbleSort(reduced_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        bubble_run_times.append(run_time)
+
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = BubbleSort(reduced_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        bubble_run_times.append(run_time)
+
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = InsertionSort(reduced_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        insertion_run_times.append(run_time)
+
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = SelectionSort(reduced_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        selection_run_times.append(run_time)
+
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = QuickSort(reduced_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        quick_run_times.append(run_time)
+
+    for _ in range (N):
+        start_time = timeit.default_timer()
+
+        _ = MergeSort(reduced_list[:])
+
+        end_time = timeit.default_timer()
+        run_time = (end_time - start_time) * 1e6
+        merge_run_times.append(run_time)
+
+    print(bubble_run_times)
+    print(insertion_run_times)
+    print(selection_run_times)
+    print(quick_run_times)
+    print(merge_run_times)
+
+    bubble_mean = np.mean(bubble_run_times)
+    insertion_mean = np.mean(insertion_run_times)
+    selection_mean = np.mean(selection_run_times)
+    quick_mean = np.mean(quick_run_times)
+    merge_mean = np.mean(merge_run_times)
+
+    draw_plot(bubble_run_times, bubble_mean)
+    draw_plot(insertion_run_times, insertion_mean)
+    draw_plot(selection_run_times, selection_mean)
+    draw_plot(quick_run_times, quick_mean)
+    draw_plot(merge_run_times, merge_mean)
 
     return 0
 
 # call each experiment
 experiment_A()
-experiment_B()
-experiment_C()
-experiment_D()
-experiment_E()
+#experiment_B()
+#experiment_C()
+#experiment_D()
+#experiment_E()
     
