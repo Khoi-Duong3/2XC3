@@ -78,6 +78,36 @@ def reduced_unique_list(length, max_value, item=None, item_index=None):
 
     return reduced_list
 
+def experiment_D_plot (run_times, mean_times, title, filename):
+    lengths = [500,5000,10000,20000,50000]
+    x_labels = [f"{l}" for l in lengths]
+
+    iterations = 80
+    x = np.arange(iterations)
+
+    fig, ax = plt.subplots(figsize=(20,8))
+
+    for i, size in enumerate(lengths):
+        heights = [run_times[size][j] for j in range(iterations)]
+        ax.bar(x + i * 0.15, heights, width=0.15, label=f"size{size}")
+
+    for i, size in enumerate(lengths):
+        ax.axhline(mean_times[size], color=f"C{i}", linestyle="--", label=f"Mean (Size {size})")
+
+    ax.set_xticks(x + 0.3)
+    ax.set_xticklabels([f"Iteration {i}" for i in range(iterations)])
+    plt.ticklabel_format(style='plain', axis='y')
+    ax.set_xlabel("Iterations")
+    ax.set_ylabel("Run time in ms")
+    ax.set_title(title)
+    ax.legend()
+    plt.tight_layout()
+
+    # Save the plot before showing
+    plt.savefig(filename)
+    plt.show()
+
+
 # Implementation of sorting algorithms
 class BubbleSort:
     def __init__(self, items_to_sort):
@@ -531,6 +561,7 @@ def experiment_D():
     merge_run_times_20000 = []
     merge_run_times_50000 = []
 
+    bubble_start = timeit.default_timer()
     for i in range (N):
         start_time500 = timeit.default_timer()
         _ = BubbleSort(random_500[:])
@@ -572,6 +603,10 @@ def experiment_D():
 
         print("BubbleSort length 50000 iteration: ", i)
     
+    bubble_end = timeit.default_timer()
+    bubble_time = (bubble_end - bubble_start)
+    
+    insertion_start = timeit.default()
     for i in range (N):
         start_time500 = timeit.default_timer()
         _ = InsertionSort(random_500[:])
@@ -612,7 +647,10 @@ def experiment_D():
         insertion_run_times_50000.append(run_time_50000)
 
         print("InsertionSort length 50000 iteration: ", i)
-    
+    insertion_end = timeit.default_timer()
+    insertion_time = (insertion_end - insertion_start)
+
+    selection_start = timeit.default_timer()
     for i in range (N):
         start_time500 = timeit.default_timer()
         _ = SelectionSort(random_500[:])
@@ -653,7 +691,10 @@ def experiment_D():
         selection_run_times_50000.append(run_time_50000)
 
         print("SelectionSort length 50000 iteration: ", i)
+    selection_end = timeit.default_timer()
+    selection_time = (selection_end - selection_start)
 
+    quick_start = timeit.default_timer()
     for i in range (N):
         start_time500 = timeit.default_timer()
         _ = QuickSort(random_500[:])
@@ -694,7 +735,10 @@ def experiment_D():
         quick_run_times_50000.append(run_time_50000)
 
         print("QuickSort length 50000 iteration: ", i)
+    quick_end = timeit.default_timer()
+    quick_time = (quick_end - quick_start)
 
+    merge_start = timeit.default_timer()
     for i in range (N):
         start_time500 = timeit.default_timer()
         _ = MergeSort(random_500[:])
@@ -735,36 +779,131 @@ def experiment_D():
         merge_run_times_50000.append(run_time_50000)
 
         print("MergeSort length 50000 iteration: ", i)
+    merge_end = timeit.default_timer()
+    merge_time = (merge_end - merge_start)
 
-    print(bubble_run_times_500)
-    print(bubble_run_times_5000)
-    print(bubble_run_times_10000)
-    print(bubble_run_times_20000)
-    print(bubble_run_times_50000)
+    bubble_run_times = {
+        500: bubble_run_times_500,
+        5000: bubble_run_times_5000,
+        10000: bubble_run_times_10000,
+        20000: bubble_run_times_20000,
+        50000: bubble_run_times_50000
+    }
 
-    print(insertion_run_times_500)
-    print(insertion_run_times_5000)
-    print(insertion_run_times_10000)
-    print(insertion_run_times_20000)
-    print(insertion_run_times_50000)
+    insertion_run_times = {
+        500: insertion_run_times_500,
+        5000: insertion_run_times_5000,
+        10000: insertion_run_times_10000,
+        20000: insertion_run_times_20000,
+        50000: insertion_run_times_50000
+    }
 
-    print(selection_run_times_500)
-    print(selection_run_times_5000)
-    print(selection_run_times_10000)
-    print(selection_run_times_20000)
-    print(selection_run_times_50000)
+    selection_run_times = {
+        500: selection_run_times_500,
+        5000: selection_run_times_5000,
+        10000: selection_run_times_10000,
+        20000: selection_run_times_20000,
+        50000: selection_run_times_50000
+    }
 
-    print(quick_run_times_500)
-    print(quick_run_times_5000)
-    print(quick_run_times_10000)
-    print(quick_run_times_20000)
-    print(quick_run_times_50000)
+    quick_run_times = {
+        500: quick_run_times_500,
+        5000: quick_run_times_5000,
+        10000: quick_run_times_10000,
+        20000: quick_run_times_20000,
+        50000: quick_run_times_50000
+    }
 
-    print(merge_run_times_500)
-    print(merge_run_times_5000)
-    print(merge_run_times_10000)
-    print(merge_run_times_20000)
-    print(merge_run_times_50000)
+    merge_run_times = {
+        500: merge_run_times_500,
+        5000: merge_run_times_5000,
+        10000: merge_run_times_10000,
+        20000: merge_run_times_20000,
+        50000: merge_run_times_50000
+    }
+
+    bubble_mean_500 = np.mean(bubble_run_times_500)
+    bubble_mean_5000 = np.mean(bubble_run_times_5000)
+    bubble_mean_10000 = np.mean(bubble_run_times_10000)
+    bubble_mean_20000 = np.mean(bubble_run_times_20000)
+    bubble_mean_50000 = np.mean(bubble_run_times_50000)
+
+    insertion_mean_500 = np.mean(insertion_run_times_500)
+    insertion_mean_5000 = np.mean(insertion_run_times_5000)
+    insertion_mean_10000 = np.mean(insertion_run_times_10000)
+    insertion_mean_20000 = np.mean(insertion_run_times_20000)
+    insertion_mean_50000 = np.mean(insertion_run_times_50000)
+
+    selection_mean_500 = np.mean(selection_run_times_500)
+    selection_mean_5000 = np.mean(selection_run_times_5000)
+    selection_mean_10000 = np.mean(selection_run_times_10000)
+    selection_mean_20000 = np.mean(selection_run_times_20000)
+    selection_mean_50000 = np.mean(selection_run_times_50000)
+
+    quick_mean_500 = np.mean(quick_run_times_500)
+    quick_mean_5000 = np.mean(quick_run_times_5000)
+    quick_mean_10000 = np.mean(quick_run_times_10000)
+    quick_mean_20000 = np.mean(quick_run_times_20000)
+    quick_mean_50000 = np.mean(quick_run_times_50000)
+
+    merge_mean_500 = np.mean(merge_run_times_500)
+    merge_mean_5000 = np.mean(merge_run_times_5000)
+    merge_mean_10000 = np.mean(merge_run_times_10000)
+    merge_mean_20000 = np.mean(merge_run_times_20000)
+    merge_mean_50000 = np.mean(merge_run_times_50000)
+
+    bubble_mean_times = {
+        500: bubble_mean_500,
+        5000: bubble_mean_5000,
+        10000: bubble_mean_10000,
+        20000: bubble_mean_20000,
+        50000: bubble_mean_50000
+    }
+
+    selection_mean_times = {
+        500: selection_mean_500,
+        5000: selection_mean_5000,
+        10000: selection_mean_10000,
+        20000: selection_mean_20000,
+        50000: selection_mean_50000
+    }
+
+    insertion_mean_times = {
+        500: insertion_mean_500,
+        5000: insertion_mean_5000,
+        10000: insertion_mean_10000,
+        20000: insertion_mean_20000,
+        50000: insertion_mean_50000
+    }
+
+    quick_mean_times = {
+        500: quick_mean_500,
+        5000: quick_mean_5000,
+        10000: quick_mean_10000,
+        20000: quick_mean_20000,
+        50000: quick_mean_50000
+    }
+
+    merge_mean_times = {
+        500: merge_mean_500,
+        5000: merge_mean_5000,
+        10000: merge_mean_10000,
+        20000: merge_mean_20000,
+        50000: merge_mean_50000
+    }
+
+    print("BubbleSort took: ", bubble_time, " s")
+    print("InsertionSort took: ", insertion_time, " s")
+    print("SelectionSort took: ", selection_time, " s")
+    print("QuickSort took: ", quick_time, " s")
+    print("MergeSort took: ", merge_time, " s")
+
+    experiment_D_plot(bubble_run_times, bubble_mean_times, "Experiment D: BubbleSort", "bubble_experiment_D.png")
+    experiment_D_plot(insertion_run_times, insertion_mean_times, "Experiment D: InsertionSort", "insertion_experiment_D.png")
+    experiment_D_plot(selection_run_times, selection_mean_times, "Experiment D: SelectionSort", "selection_experiment_D.png")
+    experiment_D_plot(quick_run_times, quick_mean_times, "Experiment D: QuickSort", "quick_experiment_D.png")
+    experiment_D_plot(merge_run_times, merge_mean_times, "Experiment D: MergeSort", "merge_experiment_D.png")
+
 
     return 0
 
@@ -780,6 +919,7 @@ def experiment_E():
     quick_run_times = []
     merge_run_times = []
 
+    
     for _ in range (N):
         start_time = timeit.default_timer()
 
@@ -849,8 +989,8 @@ def experiment_E():
 #experiment_A()
 #experiment_B()
 #experiment_C()
-#experiment_D()
-experiment_E()
+experiment_D()
+#experiment_E()
 
 
     
