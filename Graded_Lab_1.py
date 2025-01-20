@@ -492,7 +492,278 @@ def experiment_C():
 
 def experiment_D():
     
-    # Insert your code for experiment D design here 
+    # Insert your code for experiment D design here
+    random_500 = create_random_list(500, 100000)
+    random_5000 = create_random_list(5000, 100000)
+    random_10000 =  create_random_list(10000, 100000)
+    random_20000 = create_random_list(20000, 100000)
+    random_50000 = create_random_list(50000, 100000)
+    N = 80
+
+    bubble_run_times_500 = []
+    bubble_run_times_5000 = []
+    bubble_run_times_10000 = []
+    bubble_run_times_20000 = []
+    bubble_run_times_50000 = []
+
+    insertion_run_times_500 = []
+    insertion_run_times_5000 = []
+    insertion_run_times_10000 = []
+    insertion_run_times_20000 = []
+    insertion_run_times_50000 = []
+
+    selection_run_times_500 = []
+    selection_run_times_5000 = []
+    selection_run_times_10000 = []
+    selection_run_times_20000 = []
+    selection_run_times_50000 = []
+
+    quick_run_times_500 = []
+    quick_run_times_5000 = []
+    quick_run_times_10000 = []
+    quick_run_times_20000 = []
+    quick_run_times_50000 = []
+
+    merge_run_times_500 = []
+    merge_run_times_5000 = []
+    merge_run_times_10000 = []
+    merge_run_times_20000 = []
+    merge_run_times_50000 = []
+
+    for i in range (N):
+        start_time500 = timeit.default_timer()
+        _ = BubbleSort(random_500[:])
+        end_time500 = timeit.default_timer()
+        run_time_500 = (end_time500 - start_time500) * 1e6
+        bubble_run_times_500.append(run_time_500)
+
+        print("BubbleSort length 500 iteration: ", i)
+
+        start_time5000 = timeit.default_timer()
+        _ = BubbleSort(random_5000[:])
+        end_time5000 = timeit.default_timer()
+        run_time_5000 = (end_time5000 - start_time5000) * 1e6
+        bubble_run_times_5000.append(run_time_5000)
+
+        print("BubbleSort length 5000 iteration: ", i)
+        
+        start_time10000 = timeit.default_timer()
+        _ = BubbleSort(random_10000[:])
+        end_time10000 = timeit.default_timer()
+        run_time_10000 = (end_time10000 - start_time10000) * 1e6
+        bubble_run_times_10000.append(run_time_10000)
+
+        print("BubbleSort length 10000 iteration: ", i)
+
+        start_time20000 = timeit.default_timer()
+        _ = BubbleSort(random_20000[:])
+        end_time20000 = timeit.default_timer()
+        run_time_20000 = (end_time20000 - start_time20000) * 1e6
+        bubble_run_times_20000.append(run_time_20000)
+
+        print("BubbleSort length 20000 iteration: ", i)
+
+        start_time50000 = timeit.default_timer()
+        _ = BubbleSort(random_500[:])
+        end_time50000 = timeit.default_timer()
+        run_time_50000 = (end_time50000 - start_time50000) * 1e6
+        bubble_run_times_50000.append(run_time_50000)
+
+        print("BubbleSort length 50000 iteration: ", i)
+    
+    for i in range (N):
+        start_time500 = timeit.default_timer()
+        _ = InsertionSort(random_500[:])
+        end_time500 = timeit.default_timer()
+        run_time_500 = (end_time500 - start_time500) * 1e6
+        insertion_run_times_500.append(run_time_500)
+
+        print("InsertionSort length 500 iteration: ", i)
+
+        start_time5000 = timeit.default_timer()
+        _ = InsertionSort(random_5000[:])
+        end_time5000 = timeit.default_timer()
+        run_time_5000 = (end_time5000 - start_time5000) * 1e6
+        insertion_run_times_5000.append(run_time_5000)
+
+        print("InsertionSort length 5000 iteration: ", i)
+        
+        start_time10000 = timeit.default_timer()
+        _ = InsertionSort(random_10000[:])
+        end_time10000 = timeit.default_timer()
+        run_time_10000 = (end_time10000 - start_time10000) * 1e6
+        insertion_run_times_10000.append(run_time_10000)
+
+        print("InsertionSort length 10000 iteration: ", i)
+
+        start_time20000 = timeit.default_timer()
+        _ = InsertionSort(random_20000[:])
+        end_time20000 = timeit.default_timer()
+        run_time_20000 = (end_time20000 - start_time20000) * 1e6
+        insertion_run_times_20000.append(run_time_20000)
+
+        print("InsertionSort length 20000 iteration: ", i)
+
+        start_time50000 = timeit.default_timer()
+        _ = InsertionSort(random_500[:])
+        end_time50000 = timeit.default_timer()
+        run_time_50000 = (end_time50000 - start_time50000) * 1e6
+        insertion_run_times_50000.append(run_time_50000)
+
+        print("InsertionSort length 50000 iteration: ", i)
+    
+    for i in range (N):
+        start_time500 = timeit.default_timer()
+        _ = SelectionSort(random_500[:])
+        end_time500 = timeit.default_timer()
+        run_time_500 = (end_time500 - start_time500) * 1e6
+        selection_run_times_500.append(run_time_500)
+
+        print("SelectionSort length 500 iteration: ", i)
+
+        start_time5000 = timeit.default_timer()
+        _ = SelectionSort(random_5000[:])
+        end_time5000 = timeit.default_timer()
+        run_time_5000 = (end_time5000 - start_time5000) * 1e6
+        selection_run_times_5000.append(run_time_5000)
+
+        print("SelectionSort length 5000 iteration: ", i)
+        
+        start_time10000 = timeit.default_timer()
+        _ = SelectionSort(random_10000[:])
+        end_time10000 = timeit.default_timer()
+        run_time_10000 = (end_time10000 - start_time10000) * 1e6
+        selection_run_times_10000.append(run_time_10000)
+
+        print("SelectionSort length 10000 iteration: ", i)
+
+        start_time20000 = timeit.default_timer()
+        _ = SelectionSort(random_20000[:])
+        end_time20000 = timeit.default_timer()
+        run_time_20000 = (end_time20000 - start_time20000) * 1e6
+        selection_run_times_20000.append(run_time_20000)
+
+        print("SelectionSort length 20000 iteration: ", i)
+
+        start_time50000 = timeit.default_timer()
+        _ = SelectionSort(random_500[:])
+        end_time50000 = timeit.default_timer()
+        run_time_50000 = (end_time50000 - start_time50000) * 1e6
+        selection_run_times_50000.append(run_time_50000)
+
+        print("SelectionSort length 50000 iteration: ", i)
+
+    for i in range (N):
+        start_time500 = timeit.default_timer()
+        _ = QuickSort(random_500[:])
+        end_time500 = timeit.default_timer()
+        run_time_500 = (end_time500 - start_time500) * 1e6
+        quick_run_times_500.append(run_time_500)
+
+        print("QuickSort length 500 iteration: ", i)
+
+        start_time5000 = timeit.default_timer()
+        _ = QuickSort(random_5000[:])
+        end_time5000 = timeit.default_timer()
+        run_time_5000 = (end_time5000 - start_time5000) * 1e6
+        quick_run_times_5000.append(run_time_5000)
+
+        print("QuickSort length 5000 iteration: ", i)
+        
+        start_time10000 = timeit.default_timer()
+        _ = QuickSort(random_10000[:])
+        end_time10000 = timeit.default_timer()
+        run_time_10000 = (end_time10000 - start_time10000) * 1e6
+        quick_run_times_10000.append(run_time_10000)
+
+        print("QuickSort length 10000 iteration: ", i)
+
+        start_time20000 = timeit.default_timer()
+        _ = QuickSort(random_20000[:])
+        end_time20000 = timeit.default_timer()
+        run_time_20000 = (end_time20000 - start_time20000) * 1e6
+        quick_run_times_20000.append(run_time_20000)
+
+        print("QuickSort length 20000 iteration: ", i)
+
+        start_time50000 = timeit.default_timer()
+        _ = QuickSort(random_500[:])
+        end_time50000 = timeit.default_timer()
+        run_time_50000 = (end_time50000 - start_time50000) * 1e6
+        quick_run_times_50000.append(run_time_50000)
+
+        print("QuickSort length 50000 iteration: ", i)
+
+    for i in range (N):
+        start_time500 = timeit.default_timer()
+        _ = MergeSort(random_500[:])
+        end_time500 = timeit.default_timer()
+        run_time_500 = (end_time500 - start_time500) * 1e6
+        merge_run_times_500.append(run_time_500)
+
+        print("MergeSort length 500 iteration: ", i)
+
+        start_time5000 = timeit.default_timer()
+        _ = MergeSort(random_5000[:])
+        end_time5000 = timeit.default_timer()
+        run_time_5000 = (end_time5000 - start_time5000) * 1e6
+        merge_run_times_5000.append(run_time_5000)
+
+        print("MergeSort length 5000 iteration: ", i)
+        
+        start_time10000 = timeit.default_timer()
+        _ = MergeSort(random_10000[:])
+        end_time10000 = timeit.default_timer()
+        run_time_10000 = (end_time10000 - start_time10000) * 1e6
+        merge_run_times_10000.append(run_time_10000)
+
+        print("MergeSort length 10000 iteration: ", i)
+
+        start_time20000 = timeit.default_timer()
+        _ = MergeSort(random_20000[:])
+        end_time20000 = timeit.default_timer()
+        run_time_20000 = (end_time20000 - start_time20000) * 1e6
+        merge_run_times_20000.append(run_time_20000)
+
+        print("MergeSort length 20000 iteration: ", i)
+
+        start_time50000 = timeit.default_timer()
+        _ = MergeSort(random_500[:])
+        end_time50000 = timeit.default_timer()
+        run_time_50000 = (end_time50000 - start_time50000) * 1e6
+        merge_run_times_50000.append(run_time_50000)
+
+        print("MergeSort length 50000 iteration: ", i)
+
+    print(bubble_run_times_500)
+    print(bubble_run_times_5000)
+    print(bubble_run_times_10000)
+    print(bubble_run_times_20000)
+    print(bubble_run_times_50000)
+
+    print(insertion_run_times_500)
+    print(insertion_run_times_5000)
+    print(insertion_run_times_10000)
+    print(insertion_run_times_20000)
+    print(insertion_run_times_50000)
+
+    print(selection_run_times_500)
+    print(selection_run_times_5000)
+    print(selection_run_times_10000)
+    print(selection_run_times_20000)
+    print(selection_run_times_50000)
+
+    print(quick_run_times_500)
+    print(quick_run_times_5000)
+    print(quick_run_times_10000)
+    print(quick_run_times_20000)
+    print(quick_run_times_50000)
+
+    print(merge_run_times_500)
+    print(merge_run_times_5000)
+    print(merge_run_times_10000)
+    print(merge_run_times_20000)
+    print(merge_run_times_50000)
 
     return 0
 
