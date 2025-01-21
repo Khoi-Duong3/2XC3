@@ -28,14 +28,10 @@ def draw_plot(run_arr, mean, title, filename):
     plt.show()
 
 def experiment_d_plot(mean_values, title, filename):
-    # Ensure mean_values contains exactly 5 values
-    if len(mean_values) != 5:
-        raise ValueError("mean_values must contain exactly 5 values.")
-
     x_labels = [50, 500, 1000, 2000, 5000]
     x = np.arange(len(x_labels))  # x positions for bars
 
-    fig = plt.figure(figsize=(20, 8))
+    plt.figure(figsize=(12, 6))
     plt.bar(x, mean_values, color="blue", alpha=0.7)
 
     plt.xticks(x, x_labels)  # Set x-axis labels
