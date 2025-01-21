@@ -27,6 +27,27 @@ def draw_plot(run_arr, mean, title, filename):
     plt.savefig(filename)
     plt.show()
 
+def experiment_d_plot(mean_values, title, filename):
+    # Ensure mean_values contains exactly 5 values
+    if len(mean_values) != 5:
+        raise ValueError("mean_values must contain exactly 5 values.")
+
+    x_labels = [50, 500, 1000, 2000, 5000]
+    x = np.arange(len(x_labels))  # x positions for bars
+
+    fig = plt.figure(figsize=(20, 8))
+    plt.bar(x, mean_values, color="blue", alpha=0.7)
+
+    plt.xticks(x, x_labels)  # Set x-axis labels
+    plt.xlabel("Iterations")
+    plt.ylabel("Mean Run Time (ms)")
+    plt.title(title)
+
+    plt.tight_layout()
+    plt.savefig(filename)
+    plt.show()
+
+
 # function to generate random list 
 # @args : length = number of items 
 #       : max_value maximum value
@@ -81,36 +102,6 @@ def reduced_unique_list(length, max_value, item=None, item_index=None):
             exist.add(num)
 
     return reduced_list
-
-def experiment_D_plot (run_times, mean_times, title, filename):
-    lengths = [500,5000,10000,20000,50000]
-    x_labels = [f"{l}" for l in lengths]
-
-    iterations = 80
-    x = np.arange(iterations)
-
-    fig, ax = plt.subplots(figsize=(20,8))
-
-    for i, size in enumerate(lengths):
-        heights = [run_times[size][j] for j in range(iterations)]
-        ax.bar(x + i * 0.15, heights, width=0.15, label=f"size{size}")
-
-    for i, size in enumerate(lengths):
-        ax.axhline(mean_times[size], color=f"C{i}", linestyle="--", label=f"Mean (Size {size})")
-
-    ax.set_xticks(x + 0.3)
-    ax.set_xticklabels([f"Iteration {i}" for i in range(iterations)])
-    plt.ticklabel_format(style='plain', axis='y')
-    ax.set_xlabel("Iterations")
-    ax.set_ylabel("Run time in ms (milliseconds)")
-    ax.set_title(title)
-    ax.legend()
-    plt.tight_layout()
-
-    # Save the plot before showing
-    plt.savefig(filename)
-    plt.show()
-
 
 # Implementation of sorting algorithms
 class BubbleSort:
@@ -791,13 +782,19 @@ def experiment_D():
     insertion_mean_times = [np.mean(insertion_run_times_50), np.mean(insertion_run_times_500), np.mean(insertion_run_times_1000), np.mean(insertion_run_times_2000), np.mean(insertion_run_times_5000)]
     selection_mean_times = [np.mean(selection_run_times_50), np.mean(selection_run_times_500), np.mean(selection_run_times_1000), np.mean(selection_run_times_2000), np.mean(selection_run_times_5000)]
     quick_mean_times = [np.mean(quick_run_times_50), np.mean(quick_run_times_500), np.mean(quick_run_times_1000), np.mean(quick_run_times_2000), np.mean(quick_run_times_5000)]
-    bubble_mean_times = [np.mean(merge_run_times_50), np.mean(merge_run_times_500), np.mean(merge_run_times_1000), np.mean(merge_run_times_2000), np.mean(merge_run_times_5000)]
+    merge_mean_times = [np.mean(merge_run_times_50), np.mean(merge_run_times_500), np.mean(merge_run_times_1000), np.mean(merge_run_times_2000), np.mean(merge_run_times_5000)]
 
     print("BubbleSort took: ", bubble_time, "s")
     print("InsertionSort took: ", insertion_time, "s")
     print("SelectionSort took: ", selection_time, "s")
     print("QuickSort took: ", quick_time, "s")
     print("MergeSort took: ", merge_time, "s")
+
+    experiment_d_plot(bubble_mean_times, "Experiment D: BubbleSort", "bubble_experiment_d.png")
+    experiment_d_plot(insertion_mean_times, "Experiment D: InsertionSort", "insertion_experiment_d.png")
+    experiment_d_plot(selection_mean_times, "Experiment D: SelectionSort", "selection_experiment_d.png")
+    experiment_d_plot(quick_mean_times, "Experiment D:QuickSort", "quick_experiment_d.png")
+    experiment_d_plot(merge_mean_times, "Experiment D: MergeSort", "merge_experiment_d.png")
 
     return 0
 
@@ -880,10 +877,10 @@ def experiment_E():
     return 0
 
 # call each experiment
-experiment_A()
+#experiment_A()
 #experiment_B()
 #experiment_C()
-#experiment_D()
+experiment_D()
 #experiment_E()
 
 
