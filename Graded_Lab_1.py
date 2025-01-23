@@ -147,13 +147,15 @@ class InsertionSort:
 
        ### your implementation for insertion sort goes here
         def insertionSort(items_to_sort):
-            for i in range (1, len(items_to_sort)):
-                j = i
-                while j > 0 and (items_to_sort[j-1] > items_to_sort[j]):
-                    items_to_sort[j-1], items_to_sort[j] = items_to_sort[j], items_to_sort[j-1]
-                    j = j - 1
+            for i in range(1, len(items_to_sort)):
+                key = items_to_sort[i]  # Save the current element
+                j = i - 1
+                while j >= 0 and items_to_sort[j] > key:
+                    items_to_sort[j + 1] = items_to_sort[j]  # Shift elements
+                    j -= 1
+                items_to_sort[j + 1] = key  # Insert the key into its correct position
             return
-        
+
         insertionSort(self.sorted_items)
 
     def get_sorted(self,):
@@ -929,8 +931,8 @@ def experiment_E():
 #experiment_A()
 #experiment_B()
 #experiment_C()
-experiment_D()
-#experiment_E()
+#experiment_D()
+experiment_E()
 
 
     
