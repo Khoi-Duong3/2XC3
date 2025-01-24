@@ -42,9 +42,9 @@ def experiment_d_plot(mean_values, title, filename):
     for bar in bars:
         height = bar.get_height()  # Get the height of the bar
         plt.text(
-            bar.get_x() + bar.get_width() / 2,  # X-coordinate (center of the bar)
-            height + 0.02 * max(mean_values),     # Y-coordinate (slightly above the bar)
-            f"{height:.3f}",                      # Format the value to 2 decimal places
+            bar.get_x() + bar.get_width() / 2,  # X-coordinate 
+            height + 0.02 * max(mean_values),     # Y-coordinate 
+            f"{height:.3f}",                      # Format to 2 decimal places
             ha="center",                        # Align text to center
             va="bottom"                         # Align text at the bottom of the text box
         )
@@ -78,7 +78,7 @@ def create_reverse_list(length, max_value, item=None, item_index=None):
         random_num = random.randint(1, max_value)
         reversed_list.append(random_num)
 
-    reversed_list.sort()
+    reversed_list.sort()    # Used .sort() here because it is much faster than our elementary sorts
     reversed_list.reverse()
     return reversed_list
 
@@ -90,9 +90,9 @@ def create_near_sorted_list(length, max_value, item=None, item_index=None):
     for i in range ((max_value - length), max_value):
         near_sorted_list.append(i)
     
-    for j in range (len(near_sorted_list)//8):
+    for j in range (len(near_sorted_list)//8):      # Since we want a 75% sorted list we just need to do 1/8 inversions 
         random_item = random.randint(0, len(near_sorted_list)-1)
-        near_sorted_list[j], near_sorted_list[random_item] = near_sorted_list[random_item], near_sorted_list[j]
+        near_sorted_list[j], near_sorted_list[random_item] = near_sorted_list[random_item], near_sorted_list[j]     # This is basically just swapping with random items
 
     return near_sorted_list
 
@@ -103,16 +103,16 @@ def reduced_unique_list(length, max_value, item=None, item_index=None):
 
     reduced_list = []
     random_list = []
-    exist = set()
+    exist = set()   # Storing our seen items in a set so we know for sure that there is only 1 item in the set when adding new items into it
     for _ in range (length):
-        random_list.append(random.randint(0, max_value))
+        random_list.append(random.randint(0, max_value))    # Generating the random list
     
     for num in random_list:
-        if num not in exist:
+        if num not in exist:    # Checking if the item is in the set of not, if it is then we don't add it to the reduced list
             reduced_list.append(num)
             exist.add(num)
 
-    return reduced_list
+    return reduced_list     
 
 # Implementation of sorting algorithms
 class BubbleSort:
@@ -129,7 +129,7 @@ class BubbleSort:
             for i in range (len(items_to_sort)):
                 for j in range (0, len(items_to_sort) - i - 1):
                     if items_to_sort[j] > items_to_sort[j + 1]:
-                        items_to_sort[j], items_to_sort[j + 1] = items_to_sort[j + 1], items_to_sort[j]
+                        items_to_sort[j], items_to_sort[j + 1] = items_to_sort[j + 1], items_to_sort[j]    # Traversing through the list and swapping, very basic 
 
             return
         
@@ -148,12 +148,12 @@ class InsertionSort:
        ### your implementation for insertion sort goes here
         def insertionSort(items_to_sort):
             for i in range(1, len(items_to_sort)):
-                key = items_to_sort[i]  # Save the current element
+                key = items_to_sort[i]  # Save the current item/number so that we can insert it into the right place once we find that place
                 j = i - 1
-                while j >= 0 and items_to_sort[j] > key:
+                while j >= 0 and items_to_sort[j] > key:    # Loop to keep checking whether the key should be in this position or not
                     items_to_sort[j + 1] = items_to_sort[j]  # Shift elements
                     j -= 1
-                items_to_sort[j + 1] = key  # Insert the key into its correct position
+                items_to_sort[j + 1] = key  # Inserting the key into its correct position
             return
 
         insertionSort(self.sorted_items)
@@ -173,11 +173,11 @@ class SelectionSort:
         def selectionSort(items_to_sort):
 
             for i in range (len(items_to_sort) - 1):
-                min = i
+                min = i     # Keep track of the location of the min value
                 for j in range (i + 1, len(items_to_sort)):
-                    if items_to_sort[j] < items_to_sort[min]:
+                    if items_to_sort[j] < items_to_sort[min]:   # Update the min value if we find a smaller value
                         min = j
-                items_to_sort[i], items_to_sort[min] = items_to_sort[min], items_to_sort[i]
+                items_to_sort[i], items_to_sort[min] = items_to_sort[min], items_to_sort[i]     # Swap the min item into the sorted section of the list
 
             return
         
@@ -199,15 +199,15 @@ class MergeSort:
         l = 0
         r = 0
 
-        while l < len(arr1) and r < len(arr2):
-            if arr1[l] > arr2[r]:
+        while l < len(arr1) and r < len(arr2):  # Merge function takes in two of the auxillery arrays then compares the items and places the smaller
+            if arr1[l] > arr2[r]:               # one into the new aux array. We repeat this until one of the arrays is empty
                 aux.append(arr2[r])
                 r += 1
             else:
                 aux.append(arr1[l])
                 l += 1
 
-        while l < len(arr1):
+        while l < len(arr1):    # Then we check which array still has items then we add the remaining items into our new aux array
             aux.append(arr1[l])
             l += 1
             
@@ -217,8 +217,8 @@ class MergeSort:
 
         return aux
         
-    def mergeSort(self, arr):
-        if (len(arr) <= 1):
+    def mergeSort(self, arr):   # We recursively call this function to split the original arrays an aux arrays in half everytime until we are
+        if (len(arr) <= 1):     # left with singleton arrays which is when the merge functions will begin to merge the aux arrays together
             return arr
             
         mid = len(arr) // 2
@@ -243,8 +243,10 @@ class QuickSort:
 
        ### your implementation for selection sort goes here 
 
-    def partition(self, items_to_sort, start, end):
-
+    def partition(self, items_to_sort, start, end): # To partition the items I chose to partition on the last item, I wrote this before during 2C03 as practice 
+                                                    # so I did not look at the given pseudocode for this implementation, it may pivot around a different item compared to the pseudocode
+                                                    # If the item is smaller than the pivot then we perform a swap if not we just increment by one item, then at the end we put the pivot
+                                                    # into the right place.
         pivot = items_to_sort[end]
         j = start
         i = start - 1
@@ -263,7 +265,8 @@ class QuickSort:
 
         return i
         
-    def quickSort(self, arr, start, end):
+    def quickSort(self, arr, start, end):   # We recursively call the function on new pivots to partition the lists by halfs and we keep on halving it until we reach one.
+                                            # Once we've reached one then we know we've finished partitioning and the list is sorted.
         if start >= end:
             return arr
         pivot = self.partition(arr, start, end)
@@ -297,7 +300,10 @@ def experiment_A():
     
     # Insert your code for experiment A design here 
 
-    
+    # I could've made a run experiment function but when I originally wrote this I wanted to leave it running while I was away on campus so
+    # it ended up having 5 for loops for loops per experiment to measure the run times and call the sorts.
+    # This applies to all the experiment, I just append all the run times into an array then calculated the mean using numpy before giving those values into the plot function
+    # to the draw the bar charts
     N = 80
     bubble_run_times = []
     insertion_run_times = []
@@ -546,6 +552,8 @@ def experiment_D():
 
     # Insert your code for experiment D design here
 
+    # Experiment D was a bit different here since I had 25 for loops, very inefficient but I don't want to waste more time refactoring code that alreay works and I don't get additional marks for.
+    # I made a separate draw function for D since I wanted to diaplay the mean times on top of the bars 
     N = 80
 
     bubble_run_times_50 = []
