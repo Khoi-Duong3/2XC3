@@ -1,10 +1,10 @@
 
-
 import random
 import time
 import timeit 
 import matplotlib.pyplot as plt
 import numpy as np
+from collections import deque
 
 # Utility functions - some are implemented, others you must implement yourself.
 
@@ -35,6 +35,7 @@ def create_random_graph(nodes, edges):
 # please remove the representation you are not using
 
 # graph implementation using hash map 
+
 class GraphI:
 
     # using hash map
@@ -61,7 +62,7 @@ class GraphI:
     def is_connected(self,node1,node2):
         # your implementation for Part 3 goes here
         return False
-    
+
 # graph implementation using adjacency list   
 class GraphII:
     # using adjacency list
@@ -92,13 +93,71 @@ class GraphII:
     
 def BFS_2(graph,src,dst):
     path = []
+    
     # Your implementation for Part 1 goes here
+
+    if src == dst:
+        return path.append(src)
+
+    reached_end = False
+    visited = set([src])
+
+    parent = {src: None}
+
+    q = deque([src])
+
+    while q:
+        current = q.popleft()
+
+        if current == dst:
+            reached_end = True
+            break
+
+        for node in graph.graph[current]:
+            if node not in visited:
+                visited.add(node)
+                parent[node] = current
+                q.append(node)
+    
+    if reached_end:
+        node = dst
+        while node is not None:
+            path.append(node)
+            node = parent[node]
+        path.reverse()
+
     return path
 
 def DFS_2(graph,src,dst):
     path = []
     # Your implementation for Part 1 goes here
-    return path
+    
+    if src == dst:
+        return path.append(src)
+
+    visited = set()
+
+    def dfs (node):
+        visited.add(node)
+        path.append(node)
+
+        if node == dst:
+            return True
+
+        for neighbor in graph.graph[neighbor]:
+            if neighbor not in visited:
+                if dfs(neighbor):
+                    return True
+        path.pop()
+        return False
+    
+    reached_end = dfs(src)
+
+    if reached_end:
+        return path
+    else:
+        return []
+
 
 def BFS_3(graph,src):
     path = []
