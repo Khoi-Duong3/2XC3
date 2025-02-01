@@ -278,6 +278,8 @@ def MVC(G):
 
 def mvc_1(G):
     # Your implementation for part 6.a goes here
+    C = set()
+    
     min_cover=None
 
     return min_cover
@@ -297,7 +299,20 @@ def mvc_3(G):
 def experiment_1():
 
     # your implementation for experiment in part 5 goes here
-    return True
+    count = 0
+    for _ in range (100):
+        graph = create_random_graph(100,50) 
+
+        adj_list = GraphII(20)
+
+        adj_list.graph = graph
+
+        if adj_list.has_cycle():
+            count += 1
+    
+    proportion = count/100 
+
+    return round(proportion, 2)
 
 def experiment_2():
 
@@ -309,6 +324,19 @@ def experiment_3():
     # your implementation for any other 
     # supplemental experiments you need to run goes here (e.g For question 7.c)
     return True
+
+
+def run_experiment_1(iterations):
+    proportions = []
+    for _ in range (iterations):
+        res = experiment_1()
+        proportions.append(res)
+    
+    print(proportions)
+
+    return
+
+run_experiment_1(100)
 
 # Please feel free to include other experiments that support your answers. 
 # Or any other experiments missing 
