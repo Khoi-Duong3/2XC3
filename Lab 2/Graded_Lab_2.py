@@ -24,9 +24,30 @@ def draw_plot(run_arr, mean):
 # @args : nodes = number of nodes 
 #       : edges = number of edges
 def create_random_graph(nodes, edges):
-    graph = None
 
     # your implementation for Part 4 goes here
+
+    graph = [[] for i in range (nodes)]
+    max_number_edges = nodes * (nodes - 1) // 2
+
+    if edges > max_number_edges:
+        return -1
+
+    added = set()
+
+    while len(added) < edges:
+        start = random.randrange(nodes)
+        end = random.randrange(nodes)
+
+        if start == end:
+            continue
+        
+        edge = (min(start, end), max(start, end))
+
+        if edge not in added:
+            added.add(edge)
+            graph[start].append(end)
+            graph[end].append(start)
 
     return graph
 
@@ -84,11 +105,41 @@ class GraphII:
         return self.graph
     
     def has_cycle(self,):
+        visited = set()
         # your implementation for Part 3 goes here
+        def dfs(current, parent):
+            visited.add(current)
+            for node in self.graph[current]:
+                if node not in visited:
+                    if dfs(node, current):
+                        return True
+                elif node != parent:
+                    return True
+            return False
+        
+        for node in range (len(self.graph)):
+            if node not in visited:
+                if dfs(node, None):
+                    return True
         return False
     
     def is_connected(self,node1,node2):
         # your implementation for Part 3 goes here
+        if node1 == node2:
+            return True
+
+        visited = set([node1])
+        q = deque([node1])
+
+        while q:
+            current = q.popleft()
+            if current == node2:
+                return True
+            for node in self.graph[current]:
+                if node not in visited:
+                    visited.add(node)
+                    q.append(node)
+
         return False
     
 def BFS_2(graph,src,dst):
@@ -160,14 +211,41 @@ def DFS_2(graph,src,dst):
 
 
 def BFS_3(graph,src):
-    path = []
     # Your implementation for Part 2 goes here
-    return path
+
+    predecessors = {}
+
+    visited = set([src])
+    q = deque([src])
+
+    while q:
+        current = q.popleft()
+        for node in graph[current]:
+            if node not in visited:
+                visited.add(node)
+                predecessors[current] = node
+                q.append(node)
+                
+    return predecessors
 
 def DFS_3(graph,src):
-    path = []
     # Your implementation for Part 2 goes here
-    return path
+    
+    predecessors = {}
+    visited = set()
+    
+    def dfs (current, parent):
+        visited.add(current)
+
+        if parent is not None:
+            predecessors[current] = parent
+        for neighbor in graph[current]:
+            if neighbor not in visited:
+                dfs(neighbor, current)
+    
+    dfs(src, None)
+
+    return predecessors
 
 #Utility functions to determine minimum vertex covers
 def add_to_each(sets, element):
