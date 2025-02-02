@@ -5,6 +5,7 @@ import timeit
 import matplotlib.pyplot as plt
 import numpy as np
 from collections import deque
+from typing import List
 
 # Utility functions - some are implemented, others you must implement yourself.
 
@@ -260,9 +261,9 @@ def power_set(set):
     return power_set(set[1:]) + add_to_each(power_set(set[1:]), set[0])
 
 def is_vertex_cover(G, C):
-    for start in G.adj:
-        for end in G.adj[start]:
-            if not(start in C or end in C):
+    for u, neighbors in enumerate(G.graph):
+        for v in neighbors:
+            if u not in C and v not in C:
                 return False
     return True
 
@@ -279,22 +280,45 @@ def MVC(G):
 def mvc_1(G):
     # Your implementation for part 6.a goes here
     C = set()
-    
+
     min_cover=None
 
     return min_cover
 
 def mvc_2(G):
     # Your implementation for part 6.b goes here
-    min_cover=None
+    C = set()
+    nodes = [i for i in range(G.get_size())]
 
-    return min_cover
+    while not is_vertex_cover(G, C):
+        remaining = [v for v in nodes if v not in C]
+        if not remaining:
+            break
+        vertex = random.choice(remaining)
+        C.add(vertex)
+
+    return list(C)
 
 def mvc_3(G):
     # Your implementation for part 6.c goes here
-    min_cover=None
+    C = set()
+    e = set()
+    if hasattr(G, "graph"):
+        for u, neighbors in enumerate(G.graph):
+            for v in neighbors:
+                edge = (min(u,v), max(u,v))
+                e.add(edge)
+    
+    while not is_vertex_cover(G, C):
+        u, v = random.choice(list(e))
+        C.add(u)
+        C.add(v)
 
-    return min_cover
+        e = {edge for edge in e if u not in edge and v not in edge}
+
+    print (list(C))
+
+    return list(C)
 
 def experiment_1():
 
@@ -337,6 +361,10 @@ def run_experiment_1(iterations):
     return
 
 run_experiment_1(100)
+random_graph = create_random_graph(20,7)
+random_adj = GraphII(20)
+random_adj.graph = random_graph
+mvc_3(random_adj)
 
 # Please feel free to include other experiments that support your answers. 
 # Or any other experiments missing 
