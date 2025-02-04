@@ -281,21 +281,40 @@ def mvc_1(G):
     # Your implementation for part 6.a goes here
     C = set()
 
-    min_cover=None
+    while not is_vertex_cover(G, C):
+        highest_degree = -99999
+        highest_vertex = None
+        for vertex in range(len(G.graph)):
+            degree = len(G.graph[vertex])
+            if degree > highest_degree and vertex not in C:
+                highest_degree = degree
+                highest_vertex = vertex
+        
+        C.add(highest_vertex)
 
-    return min_cover
+        neighbors = list(G.graph[highest_vertex])
+
+        for node in neighbors:
+            G.graph[node].remove(highest_vertex)
+        
+        G.graph[highest_vertex].clear()
+            
+    return list(C)
 
 def mvc_2(G):
     # Your implementation for part 6.b goes here
     C = set()
-    nodes = [i for i in range(G.get_size())]
+    size = len(G.graph)
+    nodes = set(range(size))
 
     while not is_vertex_cover(G, C):
-        remaining = [v for v in nodes if v not in C]
+        remaining = list(nodes - C)
+
         if not remaining:
             break
-        vertex = random.choice(remaining)
-        C.add(vertex)
+
+        node = random.choice(remaining)
+        C.add(node)
 
     return list(C)
 
@@ -303,11 +322,11 @@ def mvc_3(G):
     # Your implementation for part 6.c goes here
     C = set()
     e = set()
-    if hasattr(G, "graph"):
-        for u, neighbors in enumerate(G.graph):
-            for v in neighbors:
-                edge = (min(u,v), max(u,v))
-                e.add(edge)
+
+    for u, neighbors in enumerate(G.graph):
+        for v in neighbors:
+            edge = (min(u,v), max(u,v))
+            e.add(edge)
     
     while not is_vertex_cover(G, C):
         u, v = random.choice(list(e))
@@ -341,6 +360,42 @@ def experiment_1():
 def experiment_2():
 
     # your implementation for experiment in part 7 goes here
+
+    edge_sizes = [1,5,10,15,20]
+    total_optimal_sizes = []
+    mvc1_sizes = []
+    mvc2_sizes = []
+    mvc3_sizes = []
+
+    def run_experiment_2 ():
+        for edges in edge_sizes:
+            total_optimal = 0
+            mvc1_total = 0
+            mvc2_total = 0
+            mvc3_total = 0
+            for _ in range(100):
+                graph = create_random_graph(6,edges)
+                total_optimal += len(MVC(graph))
+                mvc1_total += len(mvc_1(graph))
+                mvc2_total += len(mvc_2(graph))
+                mvc3_total += len(mvc_3(graph))
+            
+            total_optimal_sizes.append(total_optimal)
+            mvc1_sizes.append(mvc1_total)
+            mvc2_sizes.append(mvc2_total)
+            mvc3_sizes.append(mvc3_total)
+    
+    run_experiment_2()
+    
+    expected_perforamnces_mvc1 = []
+    expected_perforamnces_mvc2 = []
+    expected_perforamnces_mvc3 = []
+    
+    for i in range (len(total_optimal_sizes)):
+        expected_perforamnces_mvc1.append(mvc1_sizes[i]/total_optimal_sizes[i])
+        expected_perforamnces_mvc2.append(mvc1_sizes[i]/total_optimal_sizes[i])
+        expected_perforamnces_mvc3.append(mvc1_sizes[i]/total_optimal_sizes[i])
+            
     return True
 
 def experiment_3():
