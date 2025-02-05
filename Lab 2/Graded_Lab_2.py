@@ -27,7 +27,7 @@ def draw_plot(run_arr, mean):
 def create_random_graph(nodes, edges):
 
     # your implementation for Part 4 goes here
-
+    
     graph = [[] for i in range (nodes)]
     max_number_edges = nodes * (nodes - 1) // 2
 
@@ -100,7 +100,9 @@ class GraphII:
     def add_edge(self,src,dst):
         if not self.has_edge(src,dst):
             self.graph[src].append(dst)
-            self.graph[dst].append(src)
+            
+            if src != dst:
+                self.graph[dst].append(src)
     
     def get_graph(self,):
         return self.graph
@@ -344,9 +346,9 @@ def experiment_1():
     # your implementation for experiment in part 5 goes here
     count = 0
     for _ in range (100):
-        graph = create_random_graph(100,50) 
+        graph = create_random_graph(1000,500) 
 
-        adj_list = GraphII(20)
+        adj_list = GraphII(1000)
 
         adj_list.graph = graph
 
