@@ -6,20 +6,76 @@ import matplotlib.pyplot as plt
 import numpy as np
 from collections import deque
 from typing import List
+import copy
 
 # Utility functions - some are implemented, others you must implement yourself.
 
 # function to plot the bar graph and average runtimes of N trials
 # Please note that this function only plots the graph and does not save it
 # To save the graphs you must use plot.save(). Refer to matplotlib documentation
-def draw_plot(run_arr, mean):
-    x = np.arange(0, len(run_arr),1)
-    fig=plt.figure(figsize=(20,8))
-    plt.axhline(mean,color="red",linestyle="--",label="Avg")
-    plt.xlabel("Iterations")
-    plt.ylabel("Run time in ms order of 1e-6")
-    plt.title("Run time for retrieval")
+def draw_plot(sizes, mvc1_proportions, mvc2_proportions, mvc3_proportions, filename, title):
+    """
+    Plots a bar chart with all bars for mvc_1 first, then mvc_2, then mvc_3.
+    
+    Each bar is annotated with its label (e.g., "mvc_1(20)") horizontally at the bottom.
+    A dashed average line is drawn over each block (group) of bars, each with its own color.
+    The legend displays all three average lines.
+    
+    Parameters:
+      sizes: list of the independent variable values (e.g. edge counts or node sizes).
+      mvc1_proportions, mvc2_proportions, mvc3_proportions: lists of performance ratios
+         (one value per size) for each MVC method.
+      filename: the filename to save the figure.
+      title: title for the plot.
+    """
+    n = len(sizes)           # number of bars per MVC method
+    total_bars = 3 * n       # three MVC methods in sequence
+    x = np.arange(total_bars)
+    bar_width = 0.8
+
+    plt.figure(figsize=(20, 8))
+    
+    # Plot bars for mvc_1: indices 0 to n-1
+    plt.bar(x[0:n], mvc1_proportions, width=bar_width, color='blue', label='mvc_1')
+    # Plot bars for mvc_2: indices n to 2*n - 1
+    plt.bar(x[n:2*n], mvc2_proportions, width=bar_width, color='green', label='mvc_2')
+    # Plot bars for mvc_3: indices 2*n to 3*n - 1
+    plt.bar(x[2*n:3*n], mvc3_proportions, width=bar_width, color='orange', label='mvc_3')
+    
+    # Annotate each bar with its label, placing the text just below the top of the bar.
+    for i in range(n):
+        plt.text(x[i], mvc1_proportions[i], f"mvc_1({sizes[i]})", ha='center', va='bottom', 
+                 rotation=0, fontsize=8)
+    for i in range(n):
+        plt.text(x[n + i], mvc2_proportions[i], f"mvc_2({sizes[i]})", ha='center', va='bottom', 
+                 rotation=0, fontsize=8)
+    for i in range(n):
+        plt.text(x[2*n + i], mvc3_proportions[i], f"mvc_3({sizes[i]})", ha='center', va='bottom', 
+                 rotation=0, fontsize=8)
+    
+    # Compute the average performance ratio for each MVC method.
+    avg_mvc1 = np.mean(mvc1_proportions)
+    avg_mvc2 = np.mean(mvc2_proportions)
+    avg_mvc3 = np.mean(mvc3_proportions)
+    
+    # Draw average lines across the entire block for each MVC.
+    # For mvc_1, the x-range is from x[0] - half bar width to x[n-1] + half bar width.
+    plt.axhline(avg_mvc1, color = "red", linestyle = "--", linewidth = 2, label = "Avg mvc_1")
+    plt.axhline(avg_mvc2, color = "purple", linestyle = "--", linewidth = 2, label = "Avg mvc_2")
+    plt.axhline(avg_mvc3, color = "black", linestyle = "--", linewidth = 2, label = "Avg mvc_3")
+        
+    # Set x-axis ticks to show the MVC groups in the middle of each block.
+    tick_positions = [ (x[0] + x[n-1]) / 2, (x[n] + x[2*n-1]) / 2, (x[2*n] + x[3*n-1]) / 2 ]
+    plt.xticks(tick_positions, ['mvc_1', 'mvc_2', 'mvc_3'])
+    
+    plt.xlabel('MVC Type')
+    plt.ylabel('Performance Ratio (approx / optimal)')
+    plt.title(title)
+    plt.legend()
+    plt.savefig(filename)
     plt.show()
+
+    return
 
 # function to generate random graphs 
 # @args : nodes = number of nodes 
@@ -28,8 +84,8 @@ def create_random_graph(nodes, edges):
 
     # your implementation for Part 4 goes here
     
-    graph = [[] for i in range (nodes)]
-    max_number_edges = nodes * (nodes - 1) // 2
+    graph = GraphII(nodes)
+    max_number_edges = nodes * (nodes + 1) // 2
 
     if edges > max_number_edges:
         return -1
@@ -39,16 +95,12 @@ def create_random_graph(nodes, edges):
     while len(added) < edges:
         start = random.randrange(nodes)
         end = random.randrange(nodes)
-
-        if start == end:
-            continue
         
         edge = (min(start, end), max(start, end))
 
         if edge not in added:
             added.add(edge)
-            graph[start].append(end)
-            graph[end].append(start)
+            graph.add_edge(start, end)
 
     return graph
 
@@ -270,7 +322,7 @@ def is_vertex_cover(G, C):
     return True
 
 def MVC(G):
-    nodes = [i for i in range(G.get_size())]
+    nodes = [i for i in range(len(G.graph))]
     subsets = power_set(nodes)
     min_cover = nodes
     for subset in subsets:
@@ -348,11 +400,7 @@ def experiment_1():
     for _ in range (100):
         graph = create_random_graph(1000,500) 
 
-        adj_list = GraphII(1000)
-
-        adj_list.graph = graph
-
-        if adj_list.has_cycle():
+        if graph.has_cycle():
             count += 1
     
     proportion = count/100 
@@ -369,43 +417,126 @@ def experiment_2():
     mvc2_sizes = []
     mvc3_sizes = []
 
-    def run_experiment_2 ():
-        for edges in edge_sizes:
-            total_optimal = 0
-            mvc1_total = 0
-            mvc2_total = 0
-            mvc3_total = 0
-            for _ in range(100):
-                graph = create_random_graph(6,edges)
-                total_optimal += len(MVC(graph))
-                mvc1_total += len(mvc_1(graph))
-                mvc2_total += len(mvc_2(graph))
-                mvc3_total += len(mvc_3(graph))
-            
-            total_optimal_sizes.append(total_optimal)
-            mvc1_sizes.append(mvc1_total)
-            mvc2_sizes.append(mvc2_total)
-            mvc3_sizes.append(mvc3_total)
+    mvc1_proportions = []
+    mvc2_proportions = []
+    mvc3_proportions = []
+
+    for edge in edge_sizes:
+        optimal_total = 0
+        mvc1_total = 0
+        mvc2_total = 0
+        mvc3_total = 0
+        for _ in range (100):
+            graph = create_random_graph(6,edge)
+
+            optimal_graph = copy.deepcopy(graph)
+            mvc1_graph = copy.deepcopy(graph)
+            mvc2_graph = copy.deepcopy(graph)
+            mvc3_graph = copy.deepcopy(graph)
+
+            optimal_mvc = MVC(optimal_graph)
+            mvc1 = mvc_1(mvc1_graph)
+            mvc2 = mvc_2(mvc2_graph)
+            mvc3 = mvc_3(mvc3_graph)
+
+            optimal_total += len(optimal_mvc)
+            mvc1_total += len(mvc1)
+            mvc2_total += len(mvc2)
+            mvc3_total += len(mvc3)
+
+        total_optimal_sizes.append(optimal_total)
+        mvc1_sizes.append(mvc1_total)
+        mvc2_sizes.append(mvc2_total)
+        mvc3_sizes.append(mvc3_total)
     
-    run_experiment_2()
+    for i in range (len(edge_sizes)):
+        mvc1_proportions.append((mvc1_sizes[i]/total_optimal_sizes[i]))
+        mvc2_proportions.append((mvc2_sizes[i]/total_optimal_sizes[i]))
+        mvc3_proportions.append((mvc3_sizes[i]/total_optimal_sizes[i]))
     
-    expected_perforamnces_mvc1 = []
-    expected_perforamnces_mvc2 = []
-    expected_perforamnces_mvc3 = []
-    
-    for i in range (len(total_optimal_sizes)):
-        expected_perforamnces_mvc1.append(mvc1_sizes[i]/total_optimal_sizes[i])
-        expected_perforamnces_mvc2.append(mvc1_sizes[i]/total_optimal_sizes[i])
-        expected_perforamnces_mvc3.append(mvc1_sizes[i]/total_optimal_sizes[i])
-            
+    print(mvc1_proportions)
+    print(mvc2_proportions)
+    print(mvc3_proportions)
+
+    draw_plot(edge_sizes, mvc1_proportions, mvc2_proportions, mvc3_proportions, "experiment2.png", "Part 7: Experiment 2 variable edge size")
+
     return True
 
 def experiment_3():
 
     # your implementation for any other 
     # supplemental experiments you need to run goes here (e.g For question 7.c)
-    return True
 
+    node_sizes = [5,7,9,11,13]
+
+    total_optimal_sizes = []
+    mvc1_sizes = []
+    mvc2_sizes = []
+    mvc3_sizes = []
+
+    mvc1_proportions = []
+    mvc2_proportions = []
+    mvc3_proportions = []
+
+    for i in range(len(node_sizes)):
+        optimal_total = 0
+        mvc1_total = 0
+        mvc2_total = 0
+        mvc3_total = 0
+        for _ in range (100):
+            graph = create_random_graph(node_sizes[i], 15)
+
+            optimal_graph = copy.deepcopy(graph)
+            mvc1_graph = copy.deepcopy(graph)
+            mvc2_graph = copy.deepcopy(graph)
+            mvc3_graph = copy.deepcopy(graph)
+
+            optimal_mvc = MVC(optimal_graph)
+            mvc1 = mvc_1(mvc1_graph)
+            mvc2 = mvc_2(mvc2_graph)
+            mvc3 = mvc_3(mvc3_graph)
+
+            optimal_total += len(optimal_mvc)
+            mvc1_total += len(mvc1)
+            mvc2_total += len(mvc2)
+            mvc3_total += len(mvc3)
+        
+        total_optimal_sizes.append(optimal_total)
+        mvc1_sizes.append(mvc1_total)
+        mvc2_sizes.append(mvc2_total)
+        mvc3_sizes.append(mvc3_total)
+
+    for i in range (len(node_sizes)):
+        mvc1_proportions.append((mvc1_sizes[i]/total_optimal_sizes[i]))
+        mvc2_proportions.append((mvc2_sizes[i]/total_optimal_sizes[i]))
+        mvc3_proportions.append((mvc3_sizes[i]/total_optimal_sizes[i]))
+    
+    print(mvc1_proportions)
+    print(mvc2_proportions)
+    print(mvc3_proportions)
+
+    draw_plot(node_sizes, mvc1_proportions, mvc2_proportions, mvc3_proportions, "experiment3.png", "Part 7: Experiment 3 variable node size")
+
+    return 0
+
+def plot_experiment1(proportions):
+    avg_proportion = np.mean(proportions)
+    iterations = len(proportions)
+    x = np.arange(iterations) + 1
+
+    plt.figure(figsize=(20, 8))
+    plt.bar(x, proportions, color='blue')
+    plt.axhline(y=avg_proportion, color='red', linestyle='--', linewidth=2, 
+                label=f'Average = {avg_proportion:.2f}')
+    
+    plt.xlabel('Iteration')
+    plt.ylabel('Proportion')
+    plt.title('Part 5: Experiment 1')
+    plt.legend()
+    plt.savefig("experiment_1.png")
+    plt.show()
+
+    return
 
 def run_experiment_1(iterations):
     proportions = []
@@ -413,15 +544,19 @@ def run_experiment_1(iterations):
         res = experiment_1()
         proportions.append(res)
     
+    
     print(proportions)
+    
+    plot_experiment1(proportions)
+    
 
     return
 
-run_experiment_1(100)
-random_graph = create_random_graph(20,7)
-random_adj = GraphII(20)
-random_adj.graph = random_graph
-mvc_3(random_adj)
+run_experiment_1(80)
+#experiment_2()
+#experiment_3()
+
+
 
 # Please feel free to include other experiments that support your answers. 
 # Or any other experiments missing 
