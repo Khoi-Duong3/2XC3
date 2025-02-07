@@ -13,7 +13,7 @@ import copy
 # function to plot the bar graph and average runtimes of N trials
 # Please note that this function only plots the graph and does not save it
 # To save the graphs you must use plot.save(). Refer to matplotlib documentation
-def draw_plot(sizes, mvc1_proportions, mvc2_proportions, mvc3_proportions, filename, title):
+def draw_plot(sizes, mvc1_proportions, mvc2_proportions, mvc3_proportions, filename, title, y_label):
     """
     Plots a bar chart with all bars for mvc_1 first, then mvc_2, then mvc_3.
     
@@ -69,7 +69,7 @@ def draw_plot(sizes, mvc1_proportions, mvc2_proportions, mvc3_proportions, filen
     plt.xticks(tick_positions, ['mvc_1', 'mvc_2', 'mvc_3'])
     
     plt.xlabel('MVC Type')
-    plt.ylabel('Performance Ratio (approx / optimal)')
+    plt.ylabel(y_label)
     plt.title(title)
     plt.legend()
     plt.savefig(filename)
@@ -405,7 +405,7 @@ def experiment_1():
     
     proportion = count/100 
 
-    return round(proportion, 2)
+    return proportion
 
 def experiment_2():
 
@@ -420,6 +420,10 @@ def experiment_2():
     mvc1_proportions = []
     mvc2_proportions = []
     mvc3_proportions = []
+
+    mvc1_accuracies = []
+    mvc2_accuracies = []
+    mvc3_accuracies = []
 
     for edge in edge_sizes:
         optimal_total = 0
@@ -453,12 +457,21 @@ def experiment_2():
         mvc1_proportions.append((mvc1_sizes[i]/total_optimal_sizes[i]))
         mvc2_proportions.append((mvc2_sizes[i]/total_optimal_sizes[i]))
         mvc3_proportions.append((mvc3_sizes[i]/total_optimal_sizes[i]))
+
+        mvc1_accuracies.append((total_optimal_sizes[i]/mvc1_sizes[i]) * 100)
+        mvc2_accuracies.append((total_optimal_sizes[i]/mvc2_sizes[i]) * 100)
+        mvc3_accuracies.append((total_optimal_sizes[i]/mvc3_sizes[i]) * 100)
     
     print(mvc1_proportions)
     print(mvc2_proportions)
     print(mvc3_proportions)
 
-    draw_plot(edge_sizes, mvc1_proportions, mvc2_proportions, mvc3_proportions, "experiment2.png", "Part 7: Experiment 2 variable edge size")
+    print(mvc1_accuracies)
+    print(mvc2_accuracies)
+    print(mvc3_accuracies)
+
+    draw_plot(edge_sizes, mvc1_proportions, mvc2_proportions, mvc3_proportions, "experiment2proportion.png", "Part 7: Experiment 2 variable edge size proportion", "Performance ratio (approx/optimal)")
+    draw_plot(edge_sizes, mvc1_accuracies, mvc2_accuracies, mvc3_accuracies, "experiment2accuracy.png", "Part 7: Experiment 2 variable edge size accuracy", "Accuracy (%)")
 
     return True
 
@@ -515,7 +528,9 @@ def experiment_3():
     print(mvc2_proportions)
     print(mvc3_proportions)
 
-    draw_plot(node_sizes, mvc1_proportions, mvc2_proportions, mvc3_proportions, "experiment3.png", "Part 7: Experiment 3 variable node size")
+    
+
+    draw_plot(node_sizes, mvc1_proportions, mvc2_proportions, mvc3_proportions, "experiment3.png", "Part 7: Experiment 3 variable node size", "Performance ratio (approx/optimal)" )
 
     return 0
 
@@ -552,9 +567,9 @@ def run_experiment_1(iterations):
 
     return
 
-run_experiment_1(80)
+#run_experiment_1(80)
 #experiment_2()
-#experiment_3()
+experiment_3()
 
 
 
