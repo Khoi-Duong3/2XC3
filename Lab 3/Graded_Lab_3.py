@@ -3,6 +3,7 @@ import time
 import timeit 
 import matplotlib.pyplot as plt
 import numpy as np
+import copy
 
 # Utility functions - some are implemented, others you must implement yourself.
 
@@ -13,6 +14,7 @@ def draw_plot(run_arr, mean):
     x = np.arange(0, len(run_arr),1)
     fig=plt.figure(figsize=(20,8))
     plt.axhline(mean,color="red",linestyle="--",label="Avg")
+    plt.bar(run_arr, color = 'blue')
     plt.xlabel("Iterations")
     plt.ylabel("Run time in ms order of 1e-6")
     plt.title("Run time for retrieval")
@@ -32,22 +34,77 @@ def create_random_graph(nodes, edges):
 # @args : length = number of items 
 #       : max_value maximum value
 def create_random_list(length, max_value, item=None, item_index=None):
-    random_list=[]
-
     # your implementation for goes here
+
+    random_list = [random.randint(0,max_value) for i in range(length)]
+    if item!= None:
+        random_list.insert(item_index,item)
 
     return random_list
 
 # hybrid sort
-def hybrid_sort():
-
+def hybrid_sort(L):
     # your implementation for part 1 goes here
 
+    def recursive_binary_search(low, high, L , key):
+      
+        if low > high:
+            return low
+        else:
+            mid = (low + high) // 2
+            if L[mid] == key:
+                return mid + 1
+            elif L[mid] > key:
+                recursive_binary_search(0, mid - 1, L, key)
+            else:
+                recursive_binary_search(mid + 1, high, L, key)     
+
+    for i in range (1, len (L)):
+
+        key = L[i]
+        
+        index = recursive_binary_search(0, i , L, key)
+
+        L.insert(index, key)
+
+    return
+
+def insertion_sort(L):
+    for i in range (1, len(L)):
+        key = L[i]
+        j = i - 1
+
+        while j >= 0 and L[j] > L[i]:
+            L[j + 1] = L[j]
+            j -= 1
+
+        L[j] = key
+    
     return 0
 
 def experiment_part_2():
 
     # your implementation for part 2 goes here
+    insertion_times = []
+    hybrid_times = []
+
+    for _ in range (30):
+        random_list = create_random_list(500, 5000)
+        insertion_list = copy.deepcopy(random_list)
+        hybrid_list = copy.deepcopy(random_list)
+
+        start = timeit.default_timer()
+        hybrid_sort(hybrid_list)
+        end = timeit.default_timer()
+        hybrid_times.append(end - start)
+
+        start = timeit.default_timer()
+        insertion_sort(insertion_list)
+        end = timeit.default_timer()
+        insertion_times.append(end - start)
+
+    draw_plot(insertion_times, np.mean(insertion_times))
+    draw_plot(hybrid_times, np.mean(hybrid_times))
 
     return 0
 
