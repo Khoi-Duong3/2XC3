@@ -11,10 +11,10 @@ import copy
 # Please note that this function only plots the graph and does not save it
 # To save the graphs you must use plot.save(). Refer to matplotlib documentation
 def draw_plot(run_arr, mean):
-    x = np.arange(0, len(run_arr),1)
+    x = np.arange(0, len(run_arr),1) + 1
     fig=plt.figure(figsize=(20,8))
     plt.axhline(mean,color="red",linestyle="--",label="Avg")
-    plt.bar(run_arr, color = 'blue')
+    plt.bar(x, run_arr, color = 'blue')
     plt.xlabel("Iterations")
     plt.ylabel("Run time in ms order of 1e-6")
     plt.title("Run time for retrieval")
@@ -109,27 +109,169 @@ def experiment_part_2():
     return 0
 
 # binary search dynamic
-class binary_search():
+class DynamicArrays():
     def __init__(self):
-        pass
+        self.arrays = []
+        self.elements = 0
 
     # your implementation for part 3 goes here
     # feel free to add arguments and helper functions that you need to add
-    def search():
-        return 0 
+
+    def binary_search(self, array, target):
+        n = len(array)
+        low = 0
+        high = n - 1
+        while high >= low:
+            mid = (high + low) // 2
+            if array[mid] == target:
+                return mid
+            elif array[mid] > target:
+                high = mid - 1
+            else:
+                low = mid + 1     
+        
+        return -1
     
-    def insert():
-        return 0 
+    # This function merges two sorted arrays in the same fashion as how the merge function works in merge sort 
+    def merge_arrays(self, array1, array2):
+        merged = []
+
+        array1_pointer = 0
+        array2_pointer = 0
+
+        while array1_pointer < len(array1) and array2_pointer < len(array2):
+            if array1[array1_pointer] < array2[array2_pointer]:
+                merged.append(array1[array1_pointer])
+                array1_pointer += 1
+
+            elif array1[array1_pointer] > array2[array2_pointer]:
+                merged.append(array2[array2_pointer])
+                array2_pointer += 1
+            
+            else:
+                merged.append(array1[array1_pointer])
+                merged.append(array2[array2_pointer])
+                array1_pointer += 1
+                array2_pointer += 1
+        
+        while array1_pointer < len(array1):
+            merged.append(array1[array1_pointer])
+            array1_pointer += 1
+        
+        while array2_pointer < len(array2):
+            merged.append(array2[array2_pointer])
+            array2_pointer += 1
+
+        return merged
+
+    def search(self, target):
+        for array in self.arrays:
+            if array:
+                if self.binary_search(array, target) != -1:
+                    return True
+        
+        return False
     
-    def delete():
-        return 0 
+    def insert(self, item):
+        new_array = [item]
+        i = 0
+
+        while True:
+            if i >= len(self.arrays):
+                self.arrays.append(new_array)
+                break
+            if self.arrays[i] is None:
+                self.arrays[i] = new_array
+                break
+            else:
+                merged = self.merge_arrays(self.arrays[i], new_array)
+                self.arrays[i] = None
+                new_array = merged
+                i += 1
+        
+        self.elements += 1
+        
+        return
     
-    def binary_search_dynamic():
-        return 0
+    def delete(self, item):
+        if not self.seach(item):
+            return
+        
+        deleted = []
+        for array in self.arrays:
+            if array:
+                i = 0
+                while i < len(deleted):
+                    deleted.append(array[i])
+
+        deleted.remove(item)
+        self.arrays = []
+        self.elements = 0
+        for element in deleted:
+            self.insert(element)
+
+        return 
+    
+    def get_random_num(self):
+        if self.elements == 0:
+            return None
+        
+        index = random.randint(0, self.elements - 1)
+
+        for array in self.arrays:
+            if array:
+                if index < len(array):
+                    return array[index]
+                else:
+                    index -= len(array)
+        
+        return None
+    
+    # WHY IS THIS NEEDED??? IDK WHAT TO DO WITH IT!!! 
+    def binary_search_dynamic(self, target):
+        return self.search(target)
     
 def experiment_part_4():
 
      # your implementation for part 4 goes here
+    one_times = []
+    two_times = []
+    three_times = []
+    dynamic_times = []
+
+    for _ in range (30):
+        L = create_random_list(5000, 10000)
+        L.sort()
+        dynamic_array = DynamicArrays()
+        for i in range (len(L)):
+            dynamic_array.insert(L[i])
+        
+        start = timeit.default_timer()
+        binary_search_1(L, random.choice(L))
+        end = timeit.default_timer()
+        one_times.append(end - start)
+
+        start = timeit.default_timer()
+        binary_search_2(L, random.choice(L))
+        end = timeit.default_timer()
+        two_times.append(end - start)
+
+        start = timeit.default_timer()
+        binary_search_3(L, random.choice(L))
+        end = timeit.default_timer()
+        three_times.append(end - start)
+
+        target = dynamic_array.get_random_num()
+        start = timeit.default_timer()
+        dynamic_array.binary_search_dynamic(target)
+        end = timeit.default_timer()
+        dynamic_times.append(end - start)
+
+    draw_plot(one_times, np.mean(one_times))
+    draw_plot(two_times, np.mean(two_times)) 
+    draw_plot(three_times, np.mean(three_times))     
+    draw_plot(dynamic_times, np.mean(dynamic_times)) 
+
 
     return 0
 
@@ -259,3 +401,5 @@ def experiment_part_6():
 
     # your implementation for part 6 (experiment to compare with prim's) goes here
     return 0
+
+experiment_part_4()
