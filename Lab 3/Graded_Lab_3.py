@@ -189,6 +189,7 @@ class DynamicArrays():
                 new_array = merged
                 i += 1
         
+        
         self.elements += 1
         
         return
@@ -203,9 +204,10 @@ class DynamicArrays():
                 i = 0
                 while i < len(deleted):
                     deleted.append(array[i])
+                    i += 1
 
         deleted.remove(item)
-        self.arrays = []
+        self.arrays = []        # This line clears out the current dynamic array by reinitializing it
         self.elements = 0
         for element in deleted:
             self.insert(element)
@@ -360,6 +362,9 @@ def init_d(G):
 
 #Assumes G represents its nodes as integers 0,1,...,(n-1)
 # this is the unknown algorithm you must reverse engineer for part 6
+# This unknown function is performing edge relaxation, whenever it finds a path through the itermediate node at k that is shorter than the path from node i to node j.
+# It will update the path from i to j to be from i to k then from k to j. It finds the shortest path between every single pair of nodes in a graph. I believe this 
+# algorithm is known as the Floyd Warshall algorithm
 def unknown(G):
     n = G.number_of_nodes()
     d = init_d(G)
@@ -381,18 +386,148 @@ class Graph():
 
 class Heap():
     def __init__(self):
-        pass
-
+        self.heap = []
+        self.size = 0
     # borrow this implementation from class
 
-def prims(G):
+    def swim(self, index):
+        parent_index = (index - 1) // 2
+        if index > 0 and self.heap[index] < self.heap[parent_index]:
+            self.heap[index], self.heap[parent_index] = self.heap[parent_index], self.heap[index]
+            self.swim(parent_index)
+
+        return
+
+    def sink (self, index):
+        left_child = 2 * index + 1
+        right_child = 2 * index + 2
+        smallest = index
+        if left_child < self.size and self.heap[left_child] < self.heap[smallest]:
+            smallest = left_child
+        if right_child < self.size and self.heap[right_child] < self.heap[smallest]:
+            smallest = right_child
+        if smallest != index:
+            self.heap[index], self.heap[smallest] = self.heap[smallest], self.heap[index]
+            self.sink(smallest)
+
+        return
+    
+    def insert(self, value):
+        self.heap.append(value)
+        self.size += 1
+        self.swim(self.size - 1)
+
+        return
+    
+    def swap(self, index1, index2):
+        self.heap[index1], self.heap[index2] = self.heap[index2], self.heap[index1]
+
+        return
+    
+    def delete(self):
+        self.swap(0, self.size - 1)
+        min_value = self.heap.pop()
+        self.size -= 1
+        self.sink(0)
+
+        return min_value
+    
+    def heapify(self, array):
+        self.heap = array
+        self.size = len(array)
+        for i in range(self.size // 2 - 1, -1, -1):
+            self.sink(i)
+
+        return
+
+class UnionFind():
+    def __init__(self, vertices):
+        self.parent = {i: i for i in range (vertices)}
+        self.rank = {i: 0 for i in range (vertices)}
+    def find(self, vertex):
+        if self.parent[vertex] != vertex:
+            self.parent[vertex] = self.find(self.parent[vertex])
+        return self.parent[vertex]
+    
+    def union(self, vertex1, vertex2):
+        rootV1 = self.find(vertex1)
+        rootV2 = self.find(vertex2)
+        if rootV1 == rootV2:
+            return False
+        
+        if self.rank[rootV1] < self.rank[rootV2]:
+            self.parent[rootV1] = rootV2
+        elif self.rank[rootV1] > self.rank[rootV2]:
+            self.parent[rootV2] = rootV1
+        else:
+            self.parent[rootV2] = rootV1
+            self.rank[rootV1] += 1
+
+
+def prims(G, start = None):
+    if not G:
+        return []
+
+    if start is None:
+        start = list(G.adj.keys())[0]
+
     mst = []
+    
+    visited = set()
+    visited.add(start)
+    min_heap = Heap()
+    def get_edge_weights(u, v):
+        if (u,v) in G.weights:
+            return G.weights[(u,v)]
+        elif(v,u) in G.weights:
+            return G.weights[(v,u)]
+        else:
+            return KeyError
+    
+    for neighbour in G.adj[start]:
+        weight = get_edge_weights(start, neighbour)
+        min_heap.insert((weight, start, neighbour))
+    
+    while min_heap.size > 0 and len(visited) < len(G.adj):
+        weight, u, v = min_heap.delete()
+        if v in visited:
+            continue
+
+        visited.add(v)
+        mst.append((u,v, weight))
+
+        for node in G.adj[v]:
+            if node not in visited:
+                weight = get_edge_weights(v, node)
+                min_heap.insert((weight, v, node))
 
     # borrow this implementation from class
     return mst
 
 def krushkals(G):
+    if not G.adj:
+        return []
+    
     mst = []
+    vertices = list(G.adj.keys())
+    unionFind = UnionFind(vertices)
+    
+    edges = []
+    for (u,v), weight in G.weights.items():
+        if u == v:  # This avoids self loops
+            continue
+        if u < v:   # This avoids adding the same edge twice so we only take the edge where u is the smaller vertex
+            edges.append((weight, u, v))
+        
+    min_heap = Heap()
+    min_heap.heapify(edges)
+
+    while min_heap.size > 0 and len(mst) < len(G.adj) - 1:
+        weight, u, v = min_heap.delete()
+
+        if unionFind.find(u) != unionFind.find(v):
+            mst.append((u,v, weight))
+            unionFind.union(u,v)
 
     # your implementation for part 6 (krushkal's algorithm) goes here
     return mst
@@ -402,4 +537,5 @@ def experiment_part_6():
     # your implementation for part 6 (experiment to compare with prim's) goes here
     return 0
 
+experiment_part_2()
 experiment_part_4()
