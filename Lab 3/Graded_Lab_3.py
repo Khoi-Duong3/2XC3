@@ -10,23 +10,40 @@ import copy
 # function to plot the bar graph and average runtimes of N trials
 # Please note that this function only plots the graph and does not save it
 # To save the graphs you must use plot.save(). Refer to matplotlib documentation
-def draw_plot(run_arr, mean):
+def draw_plot(run_arr, mean, title, filename):
     x = np.arange(0, len(run_arr),1) + 1
     fig=plt.figure(figsize=(20,8))
-    plt.axhline(mean,color="red",linestyle="--",label="Avg")
+    plt.axhline(mean,color="red",linestyle="--",label=f"Average = {mean}")
     plt.bar(x, run_arr, color = 'blue')
     plt.xlabel("Iterations")
-    plt.ylabel("Run time in ms order of 1e-6")
-    plt.title("Run time for retrieval")
+    plt.ylabel("Run time in μs")
+    plt.title(title)
+    plt.legend()
+    plt.savefig(filename)
     plt.show()
 
 # function to generate random graphs 
 # @args : nodes = number of nodes 
 #       : edges = number of edges
-def create_random_graph(nodes, edges):
-    graph = None
+def create_random_graph(nodes, edges, min_weight, max_weight):
 
     # your implementation goes here
+    graph = Graph()
+
+    for i in range(nodes):
+        graph.adj[i] = []
+    
+    valid_edges = [(u,v) for u in range(nodes) for v in range(u + 1, nodes)]
+
+    num_edges = min(len(valid_edges), edges)
+
+    chosen_edges = random.sample(valid_edges, num_edges)
+
+    for u,v in chosen_edges:
+        weight = random.randint(min_weight, max_weight)
+        graph.adj[u].append(v)
+        graph.adj[v].append(u)
+        graph.weights[(u,v)] = weight
 
     return graph
 
@@ -55,9 +72,9 @@ def hybrid_sort(L):
             if L[mid] == key:
                 return mid + 1
             elif L[mid] > key:
-                recursive_binary_search(0, mid - 1, L, key)
+                return recursive_binary_search(0, mid - 1, L, key)
             else:
-                recursive_binary_search(mid + 1, high, L, key)     
+                return recursive_binary_search(mid + 1, high, L, key)     
 
     for i in range (1, len (L)):
 
@@ -88,6 +105,10 @@ def experiment_part_2():
     insertion_times = []
     hybrid_times = []
 
+    
+    '''
+    # This is a test for the average case
+    
     for _ in range (30):
         random_list = create_random_list(500, 5000)
         insertion_list = copy.deepcopy(random_list)
@@ -96,15 +117,70 @@ def experiment_part_2():
         start = timeit.default_timer()
         hybrid_sort(hybrid_list)
         end = timeit.default_timer()
-        hybrid_times.append(end - start)
+        hybrid_times.append((end - start) * 1000000)
 
         start = timeit.default_timer()
         insertion_sort(insertion_list)
         end = timeit.default_timer()
-        insertion_times.append(end - start)
+        insertion_times.append((end - start) * 1000000)
+    '''
+    '''
+    # This is a test for the worst case
+   
+    for _ in range (30):
+        random_list = create_random_list(500, 5000)
+        random_list.sort()
+        random_list.reverse()
+        insertion_list = copy.deepcopy(random_list)
+        hybrid_list = copy.deepcopy(random_list)
 
-    draw_plot(insertion_times, np.mean(insertion_times))
-    draw_plot(hybrid_times, np.mean(hybrid_times))
+        start = timeit.default_timer()
+        hybrid_sort(hybrid_list)
+        end = timeit.default_timer()
+        hybrid_times.append((end - start) * 1000000)
+
+        start = timeit.default_timer()
+        insertion_sort(insertion_list)
+        end = timeit.default_timer()
+        insertion_times.append((end - start) * 1000000)
+    '''
+    '''
+    # This is a test for the best case  
+    for _ in range (30):
+        random_list = create_random_list(500, 5000)
+        random_list.sort()
+        insertion_list = copy.deepcopy(random_list)
+        hybrid_list = copy.deepcopy(random_list)
+
+        start = timeit.default_timer()
+        hybrid_sort(hybrid_list)
+        end = timeit.default_timer()
+        hybrid_times.append((end - start) * 1000000)
+
+        start = timeit.default_timer()
+        insertion_sort(insertion_list)
+        end = timeit.default_timer()
+        insertion_times.append((end - start) * 1000000)
+    '''
+    
+    # This test is for the random case
+    for _ in range (10):
+        random_list = create_random_list(500, 5000)
+        insertion_list = copy.deepcopy(random_list)
+        hybrid_list = copy.deepcopy(random_list)
+
+        start = timeit.default_timer()
+        hybrid_sort(hybrid_list)
+        end = timeit.default_timer()
+        hybrid_times.append((end - start) * 1000000)
+
+        start = timeit.default_timer()
+        insertion_sort(insertion_list)
+        end = timeit.default_timer()
+        insertion_times.append((end - start) * 1000000)
+    
+    draw_plot(insertion_times, np.mean(insertion_times), "Insertion Sort Random Case", "insertion_sort_random.png")
+    draw_plot(hybrid_times, np.mean(hybrid_times), "Hybrid Sort Random Case", "Hybrid_sort_random.png")
 
     return 0
 
@@ -243,36 +319,36 @@ def experiment_part_4():
 
     for _ in range (30):
         L = create_random_list(5000, 10000)
-        L.sort()
         dynamic_array = DynamicArrays()
         for i in range (len(L)):
             dynamic_array.insert(L[i])
+        L.sort()
+        target = random.choice(L)
         
         start = timeit.default_timer()
-        binary_search_1(L, random.choice(L))
+        binary_search_1(L, target)
         end = timeit.default_timer()
-        one_times.append(end - start)
+        one_times.append((end - start) * 1000000)
 
         start = timeit.default_timer()
-        binary_search_2(L, random.choice(L))
+        binary_search_2(L, target)
         end = timeit.default_timer()
-        two_times.append(end - start)
+        two_times.append((end - start) * 1000000)
 
         start = timeit.default_timer()
-        binary_search_3(L, random.choice(L))
+        binary_search_3(L, target)
         end = timeit.default_timer()
-        three_times.append(end - start)
+        three_times.append((end - start) * 1000000)
 
-        target = dynamic_array.get_random_num()
         start = timeit.default_timer()
         dynamic_array.binary_search_dynamic(target)
         end = timeit.default_timer()
-        dynamic_times.append(end - start)
+        dynamic_times.append((end - start) * 1000000)
 
-    draw_plot(one_times, np.mean(one_times))
-    draw_plot(two_times, np.mean(two_times)) 
-    draw_plot(three_times, np.mean(three_times))     
-    draw_plot(dynamic_times, np.mean(dynamic_times)) 
+    draw_plot(one_times, np.mean(one_times), "Binary Search 1 performance", "binary1.png")
+    draw_plot(two_times, np.mean(two_times), "Binary Search 2 performance", "binary2.png") 
+    draw_plot(three_times, np.mean(three_times), "Binary Search 3 performance", "binary3.png")     
+    draw_plot(dynamic_times, np.mean(dynamic_times), "Dynamic Array performance", "dynamic.png") 
 
 
     return 0
@@ -442,8 +518,8 @@ class Heap():
 
 class UnionFind():
     def __init__(self, vertices):
-        self.parent = {i: i for i in range (vertices)}
-        self.rank = {i: 0 for i in range (vertices)}
+        self.parent = {i: i for i in vertices}
+        self.rank = {i: 0 for i in vertices}
     def find(self, vertex):
         if self.parent[vertex] != vertex:
             self.parent[vertex] = self.find(self.parent[vertex])
@@ -504,7 +580,7 @@ def prims(G, start = None):
     # borrow this implementation from class
     return mst
 
-def krushkals(G):
+def kruskals(G):
     if not G.adj:
         return []
     
@@ -513,6 +589,7 @@ def krushkals(G):
     unionFind = UnionFind(vertices)
     
     edges = []
+    
     for (u,v), weight in G.weights.items():
         if u == v:  # This avoids self loops
             continue
@@ -529,13 +606,33 @@ def krushkals(G):
             mst.append((u,v, weight))
             unionFind.union(u,v)
 
-    # your implementation for part 6 (krushkal's algorithm) goes here
+    # your implementation for part 6 (kruskal's algorithm) goes here
     return mst
 
 def experiment_part_6():
 
     # your implementation for part 6 (experiment to compare with prim's) goes here
+    prims_times = []
+    kruskals_times = []
+    for _ in range (50):
+        graph = create_random_graph(7,20, 1, 10)
+        prims_graph = copy.deepcopy(graph)
+        kruskals_graph = copy.deepcopy(graph)
+
+        start = timeit.default_timer()
+        prims(prims_graph)
+        end = timeit.default_timer()
+        prims_times.append((end - start) * 1000000)
+
+        start = timeit.default_timer()
+        kruskals(kruskals_graph)
+        end = timeit.default_timer()
+        kruskals_times.append((end - start) * 1000000)
+
+    draw_plot(prims_times, np.mean(prims_times), "Prim's Heap performance", "prims.png")
+    draw_plot(kruskals_times, np.mean(kruskals_times), "Kruskal's Heap performance", "kruskals.png")
     return 0
 
 experiment_part_2()
-experiment_part_4()
+#experiment_part_4()
+#experiment_part_6()
