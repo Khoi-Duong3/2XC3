@@ -64,25 +64,30 @@ def hybrid_sort(L):
     # your implementation for part 1 goes here
 
     def recursive_binary_search(low, high, L , key):
-      
-        if low > high:
-            return low
-        else:
-            mid = (low + high) // 2
-            if L[mid] == key:
+        mid = (low + high) // 2
+        if low >= high:
+            if mid < 0:
+                mid = 0
+            elif mid > len(L) - 1:
+                mid = len(L) - 1
+        
+            if L[mid] < key:
                 return mid + 1
-            elif L[mid] > key:
-                return recursive_binary_search(0, mid - 1, L, key)
             else:
-                return recursive_binary_search(mid + 1, high, L, key)     
+                return mid
+        
+        if L[mid] == key:
+            return mid
+        elif L[mid] > key:
+            return recursive_binary_search(low, mid - 1, L, key)
+        else:
+            return recursive_binary_search(mid + 1, high, L, key)       
 
     for i in range (1, len (L)):
-
-        key = L[i]
         
-        index = recursive_binary_search(0, i , L, key)
-
-        L.insert(index, key)
+        index = recursive_binary_search(0, i-1, L, key = L[i])
+        if i != index:
+            L.insert(index, L.pop(i))
 
     return
 
@@ -91,11 +96,11 @@ def insertion_sort(L):
         key = L[i]
         j = i - 1
 
-        while j >= 0 and L[j] > L[i]:
+        while j >= 0 and L[j] > key:
             L[j + 1] = L[j]
             j -= 1
 
-        L[j] = key
+        L[j + 1] = key
     
     return 0
 
@@ -106,7 +111,7 @@ def experiment_part_2():
     hybrid_times = []
 
     
-    '''
+    
     # This is a test for the average case
     
     for _ in range (30):
@@ -123,7 +128,7 @@ def experiment_part_2():
         insertion_sort(insertion_list)
         end = timeit.default_timer()
         insertion_times.append((end - start) * 1000000)
-    '''
+    
     '''
     # This is a test for the worst case
    
@@ -162,7 +167,7 @@ def experiment_part_2():
         end = timeit.default_timer()
         insertion_times.append((end - start) * 1000000)
     '''
-    
+    '''
     # This test is for the random case
     for _ in range (10):
         random_list = create_random_list(500, 5000)
@@ -178,7 +183,7 @@ def experiment_part_2():
         insertion_sort(insertion_list)
         end = timeit.default_timer()
         insertion_times.append((end - start) * 1000000)
-    
+    '''
     draw_plot(insertion_times, np.mean(insertion_times), "Insertion Sort Random Case", "insertion_sort_random.png")
     draw_plot(hybrid_times, np.mean(hybrid_times), "Hybrid Sort Random Case", "Hybrid_sort_random.png")
 
