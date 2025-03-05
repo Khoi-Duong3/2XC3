@@ -28,6 +28,8 @@ def draw_plot(run_arr, mean, title, filename):
 def create_random_graph(nodes, edges, min_weight, max_weight):
 
     # your implementation goes here
+
+    # The same create random graph function in Lab 2. 
     graph = Graph()
 
     for i in range(nodes):
@@ -53,6 +55,8 @@ def create_random_graph(nodes, edges, min_weight, max_weight):
 def create_random_list(length, max_value, item=None, item_index=None):
     # your implementation for goes here
 
+    #The same create random list function from Lab 1
+
     random_list = [random.randint(0,max_value) for i in range(length)]
     if item!= None:
         random_list.insert(item_index,item)
@@ -66,11 +70,13 @@ def hybrid_sort(L):
     def recursive_binary_search(low, high, L , key):
         mid = (low + high) // 2
         if low >= high:
+            # We check here if we've gone out of range which we would then set mid to 0
             if mid < 0:
                 mid = 0
+            # Check here as well if mid is out of range past the length of the list then we set it back to the final item in the list
             elif mid > len(L) - 1:
                 mid = len(L) - 1
-        
+
             if L[mid] < key:
                 return mid + 1
             else:
@@ -87,11 +93,14 @@ def hybrid_sort(L):
         
         index = recursive_binary_search(0, i-1, L, key = L[i])
         if i != index:
+            # The insert method here performs insert for us by shifting elements to the right to make space for us to insert the item into the right place
+            # We use L.pop(i) here to remove the item from the list at that index so that we don't end up with duplicate elements after the insert
             L.insert(index, L.pop(i))
 
     return
 
 def insertion_sort(L):
+    # Standard insertion sort from Lab 1
     for i in range (1, len(L)):
         key = L[i]
         j = i - 1
@@ -109,11 +118,9 @@ def experiment_part_2():
     # your implementation for part 2 goes here
     insertion_times = []
     hybrid_times = []
-
-    
-    
+ 
     # This is a test for the average case
-    
+    # The average case for these sorts would be random since the it avoids the worst case and best case for insertion sort.
     for _ in range (30):
         random_list = create_random_list(500, 5000)
         insertion_list = copy.deepcopy(random_list)
@@ -167,23 +174,6 @@ def experiment_part_2():
         end = timeit.default_timer()
         insertion_times.append((end - start) * 1000000)
     '''
-    '''
-    # This test is for the random case
-    for _ in range (10):
-        random_list = create_random_list(500, 5000)
-        insertion_list = copy.deepcopy(random_list)
-        hybrid_list = copy.deepcopy(random_list)
-
-        start = timeit.default_timer()
-        hybrid_sort(hybrid_list)
-        end = timeit.default_timer()
-        hybrid_times.append((end - start) * 1000000)
-
-        start = timeit.default_timer()
-        insertion_sort(insertion_list)
-        end = timeit.default_timer()
-        insertion_times.append((end - start) * 1000000)
-    '''
     draw_plot(insertion_times, np.mean(insertion_times), "Insertion Sort Random Case", "insertion_sort_random.png")
     draw_plot(hybrid_times, np.mean(hybrid_times), "Hybrid Sort Random Case", "Hybrid_sort_random.png")
 
@@ -198,6 +188,7 @@ class DynamicArrays():
     # your implementation for part 3 goes here
     # feel free to add arguments and helper functions that you need to add
 
+    #Standard binary search implementation
     def binary_search(self, array, target):
         n = len(array)
         low = 0
@@ -245,6 +236,7 @@ class DynamicArrays():
 
         return merged
 
+    # Iterating through all the arrays in the dynamic array, then we perform binary search on each array if they are not empty
     def search(self, target):
         for array in self.arrays:
             if array:
@@ -258,13 +250,17 @@ class DynamicArrays():
         i = 0
 
         while True:
+            # First we check if our index is larger than the number of arrays in the data structure
+            # If it is then we append in the new_array which is a singleton array
             if i >= len(self.arrays):
                 self.arrays.append(new_array)
                 break
+            # Check if at the current index it is None which we would then assign the singleton array at that index
             if self.arrays[i] is None:
                 self.arrays[i] = new_array
                 break
             else:
+                # Otherwise we merge the two arrays with each other and set the new_array to be the merged array
                 merged = self.merge_arrays(self.arrays[i], new_array)
                 self.arrays[i] = None
                 new_array = merged
@@ -276,10 +272,12 @@ class DynamicArrays():
         return
     
     def delete(self, item):
-        if not self.seach(item):
+        # Check if we are trying to delete an item that is not in our data structure
+        if not self.search(item):
             return
         
         deleted = []
+        # The approach for this is to add every single item from the data structure into a normal array
         for array in self.arrays:
             if array:
                 i = 0
@@ -287,30 +285,17 @@ class DynamicArrays():
                     deleted.append(array[i])
                     i += 1
 
+        # Then we remove the item we want to delete from this array
         deleted.remove(item)
         self.arrays = []        # This line clears out the current dynamic array by reinitializing it
         self.elements = 0
+        # Re-insert all of the items back into the data structure
         for element in deleted:
             self.insert(element)
 
         return 
     
-    def get_random_num(self):
-        if self.elements == 0:
-            return None
-        
-        index = random.randint(0, self.elements - 1)
-
-        for array in self.arrays:
-            if array:
-                if index < len(array):
-                    return array[index]
-                else:
-                    index -= len(array)
-        
-        return None
-    
-    # WHY IS THIS NEEDED??? IDK WHAT TO DO WITH IT!!! 
+    # Calls search to search in the dynamic array. I don't know what the difference between this and search.
     def binary_search_dynamic(self, target):
         return self.search(target)
     
@@ -471,6 +456,7 @@ class Heap():
         self.size = 0
     # borrow this implementation from class
 
+    # Performs bubble up and recursively calls itself until a node can no longer swim up which maeans it's in the right place
     def swim(self, index):
         parent_index = (index - 1) // 2
         if index > 0 and self.heap[index] < self.heap[parent_index]:
@@ -479,6 +465,7 @@ class Heap():
 
         return
 
+    # Performs bubble down and recursively calls itself until the node is in the right place
     def sink (self, index):
         left_child = 2 * index + 1
         right_child = 2 * index + 2
@@ -493,6 +480,7 @@ class Heap():
 
         return
     
+    # Insert it at the bottom of the heap then we swim it up to its correct position
     def insert(self, value):
         self.heap.append(value)
         self.size += 1
@@ -500,11 +488,14 @@ class Heap():
 
         return
     
+    # Simple swap helper function
     def swap(self, index1, index2):
         self.heap[index1], self.heap[index2] = self.heap[index2], self.heap[index1]
 
         return
     
+    # Move the top node in the heap down to the bottom then we sink the new item down to the right place.
+    # We also decrease the size of our heap after we pop the last item from our heap since the last item now is the item we want to delete
     def delete(self):
         self.swap(0, self.size - 1)
         min_value = self.heap.pop()
@@ -513,6 +504,7 @@ class Heap():
 
         return min_value
     
+    # Heapify builds a heap from a normal list
     def heapify(self, array):
         self.heap = array
         self.size = len(array)
@@ -523,13 +515,18 @@ class Heap():
 
 class UnionFind():
     def __init__(self, vertices):
+        # Initially, all vertices' parent is itself
         self.parent = {i: i for i in vertices}
         self.rank = {i: 0 for i in vertices}
+
+    # Recursively finds the parent of the parent of a node until it reaches the root
     def find(self, vertex):
         if self.parent[vertex] != vertex:
             self.parent[vertex] = self.find(self.parent[vertex])
         return self.parent[vertex]
     
+    # Performs weight union where it adds the set/tree with the lower rank to the one with a higher rank by changing the parent of the root to the be the root
+    # of the larger tree/set
     def union(self, vertex1, vertex2):
         rootV1 = self.find(vertex1)
         rootV2 = self.find(vertex2)
@@ -546,9 +543,11 @@ class UnionFind():
 
 
 def prims(G, start = None):
+    # Return nothing on an empty graph
     if not G:
         return []
 
+    # If we are not specified a starting point/node/vertex we default to the first node in the graph
     if start is None:
         start = list(G.adj.keys())[0]
 
@@ -557,6 +556,8 @@ def prims(G, start = None):
     visited = set()
     visited.add(start)
     min_heap = Heap()
+
+    # This helper function finds the edge weights from our graph at a specific edge u,v which it then returns the weight
     def get_edge_weights(u, v):
         if (u,v) in G.weights:
             return G.weights[(u,v)]
@@ -565,10 +566,12 @@ def prims(G, start = None):
         else:
             return KeyError
     
+    # Gather all of the weights of each edge that connects the current node to its neighbors and we add them to the heap
     for neighbour in G.adj[start]:
         weight = get_edge_weights(start, neighbour)
         min_heap.insert((weight, start, neighbour))
     
+    # Then we go
     while min_heap.size > 0 and len(visited) < len(G.adj):
         weight, u, v = min_heap.delete()
         if v in visited:
