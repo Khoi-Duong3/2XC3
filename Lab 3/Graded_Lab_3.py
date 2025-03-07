@@ -614,7 +614,10 @@ def prims(G, start = None):
         weight = get_edge_weights(start, neighbour)
         min_heap.insert((weight, start, neighbour))
     
-    # Then we go
+    # Then we go through the initial heaps that contain the edges that connect the starting point to the neighbor and their weights
+    # We then remove the root of the heap then check to see if the destination has already been visited or not, if it has then we skip over it and check on the next edge that gets bubbled up
+    # If it has not been visited then we add it to our visited set and mst then we collect all of the edges that is connected to this new node and we repeat until our heap is empty
+    # or until our MST contains all nodes in the graph
     while min_heap.size > 0 and len(visited) < len(G.adj):
         weight, u, v = min_heap.delete()
         if v in visited:
@@ -632,15 +635,17 @@ def prims(G, start = None):
     return mst
 
 def kruskals(G):
+    # Return empty if the graph is empty
     if not G.adj:
         return []
     
     mst = []
     vertices = list(G.adj.keys())
-    unionFind = UnionFind(vertices)
+    unionFind = UnionFind(vertices) #Initialize our union find data structure to perform cuts between connect set of the mst and the rest of the graph
     
     edges = []
     
+    # Adding all of the edges to the edges array so that we can perform heapify on it to turn it into a heap
     for (u,v), weight in G.weights.items():
         if u == v:  # This avoids self loops
             continue
@@ -650,9 +655,11 @@ def kruskals(G):
     min_heap = Heap()
     min_heap.heapify(edges)
 
+    # Looping until the heap is empty or the size of the mst contains all of the nodes in the graph
     while min_heap.size > 0 and len(mst) < len(G.adj) - 1:
-        weight, u, v = min_heap.delete()
+        weight, u, v = min_heap.delete()    # Removing the edge from the heap
 
+        # Only add the edge and node into the mst if and only if they have different roots which means one of them is in the mst and the other isn't
         if unionFind.find(u) != unionFind.find(v):
             mst.append((u,v, weight))
             unionFind.union(u,v)
