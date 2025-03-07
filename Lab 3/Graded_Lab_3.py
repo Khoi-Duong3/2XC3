@@ -118,7 +118,7 @@ def experiment_part_2():
     # your implementation for part 2 goes here
     insertion_times = []
     hybrid_times = []
- 
+    '''
     # This is a test for the average case
     # The average case for these sorts would be random since the it avoids the worst case and best case for insertion sort.
     for _ in range (30):
@@ -135,7 +135,7 @@ def experiment_part_2():
         insertion_sort(insertion_list)
         end = timeit.default_timer()
         insertion_times.append((end - start) * 1000000)
-    
+    '''
     '''
     # This is a test for the worst case
    
@@ -156,7 +156,7 @@ def experiment_part_2():
         end = timeit.default_timer()
         insertion_times.append((end - start) * 1000000)
     '''
-    '''
+    
     # This is a test for the best case  
     for _ in range (30):
         random_list = create_random_list(500, 5000)
@@ -173,9 +173,9 @@ def experiment_part_2():
         insertion_sort(insertion_list)
         end = timeit.default_timer()
         insertion_times.append((end - start) * 1000000)
-    '''
-    draw_plot(insertion_times, np.mean(insertion_times), "Insertion Sort Random Case", "insertion_sort_random.png")
-    draw_plot(hybrid_times, np.mean(hybrid_times), "Hybrid Sort Random Case", "Hybrid_sort_random.png")
+    
+    draw_plot(insertion_times, np.mean(insertion_times), "Insertion Sort Best Case", "insertion_sort_best.png")
+    draw_plot(hybrid_times, np.mean(hybrid_times), "Hybrid Sort Best Case", "Hybrid_sort_best.png")
 
     return 0
 
@@ -299,9 +299,29 @@ class DynamicArrays():
     def binary_search_dynamic(self, target):
         return self.search(target)
     
+def insert_normal(L, element):
+    low = 0
+    high = len(L)
+    while low < high:
+        mid = (low + high) // 2
+        if L[mid] < element:
+            low = mid + 1
+        else:
+            high = mid - 1
+    
+    index = low
+
+    L.append(element)
+
+    for i in range (len(L) - 1,index, -1):
+        L[i] = L[i-1]
+
+    return
+
 def experiment_part_4():
 
-     # your implementation for part 4 goes here
+    # your implementation for part 4 goes here
+    
     one_times = []
     two_times = []
     three_times = []
@@ -339,8 +359,31 @@ def experiment_part_4():
     draw_plot(two_times, np.mean(two_times), "Binary Search 2 performance", "binary2.png") 
     draw_plot(three_times, np.mean(three_times), "Binary Search 3 performance", "binary3.png")     
     draw_plot(dynamic_times, np.mean(dynamic_times), "Dynamic Array performance", "dynamic.png") 
+    
+    insert_normal_times = []
+    dynamic_array_insert = []
+
+    for _ in range (30):
+        L = []
+        start = timeit.default_timer()
+        for _ in range(500):
+            num = random.randint(0,5000)
+            insert_normal(L, num)
+        end = timeit.default_timer()
+        insert_normal_times.append((end - start) * 1000000)
+
+    for _ in range (30):
+        Dynamic = DynamicArrays()
+        start = timeit.default_timer()
+        for _ in range(500):
+            num = random.randint(0,5000)
+            Dynamic.insert
+        end = timeit.default_timer()
+        dynamic_array_insert.append((end - start) * 1000000)
 
 
+    draw_plot(insert_normal_times, np.mean(insert_normal_times), "Insert on normal array performance", "insert1.png")
+    draw_plot(dynamic_array_insert, np.mean(dynamic_array_insert), "Insert on dynamic array performance", "dynamicinsert.png")    
     return 0
 
 # binary search  implementation 1 against which you must compare the performance of Part 3 
